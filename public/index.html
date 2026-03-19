@@ -11,6 +11,9 @@
 </head>
 <body>
 
+<!-- Confetti canvas — fixed, pointer-events:none, zawsze na wierzchu -->
+<canvas id="confetti-canvas" style="position:fixed;inset:0;pointer-events:none;z-index:999;"></canvas>
+
 <div class="bg-ambient">
   <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
   <div class="grain"></div>
@@ -41,9 +44,21 @@
   <div class="lobby-layout">
     <div class="lobby-main">
       <div class="lobby-top">
+
+        <!-- Kod pokoju / link zaproszenia -->
+        <div class="room-invite" id="room-invite">
+          <span class="room-label">Kod pokoju</span>
+          <span class="room-code" id="room-code">—</span>
+          <button class="btn btn-ghost btn-room-copy" id="room-copy-btn" title="Kopiuj link zaproszenia">
+            <span id="room-copy-icon">🔗</span> Kopiuj link
+          </button>
+        </div>
+
         <div class="lobby-status">
           <span class="pulse-dot"></span>Oczekiwanie na graczy…
         </div>
+
+        <!-- HOST -->
         <div id="host-controls" class="host-section hidden">
           <p class="section-eyebrow">Jesteś hostem</p>
           <div class="cat-label-row">
@@ -53,11 +68,14 @@
           <div id="category-chips" class="category-chips"></div>
           <button id="start-btn" class="btn btn-primary btn-start">▶ Rozpocznij grę</button>
         </div>
+
+        <!-- GOŚĆ -->
         <div id="guest-controls" class="guest-section hidden">
           <p class="guest-hint">Poczekaj aż host rozpocznie grę…</p>
           <p class="guest-cats">Kategorie: <strong id="lobby-category-display">Wszystkie</strong></p>
         </div>
       </div>
+
       <div class="chat-section">
         <p class="section-eyebrow">Czat</p>
         <div id="chat-messages" class="chat-messages"></div>
@@ -67,11 +85,14 @@
         </div>
       </div>
     </div>
+
     <div class="lobby-sidebar">
       <p class="section-eyebrow">Gracze online</p>
       <div id="lobby-leaderboard" class="player-list"></div>
     </div>
   </div>
+
+  <!-- Odliczanie overlay -->
   <div id="countdown-overlay" class="overlay hidden">
     <div class="countdown-inner">
       <span class="countdown-label">Gra zaczyna się za</span>
@@ -94,22 +115,22 @@
       </div>
       <div class="category-row"><span id="category-label" class="category-label"></span></div>
 
-      <!-- Pytanie + overlay pauzy (WEWNĄTRZ question-area żeby position:absolute działał) -->
-      <div class="question-area" id="question-card">
+      <!-- Streak badge (pojawia się nad pytaniem po >=2 z rzędu) -->
+      <div id="streak-badge" class="streak-badge hidden">
+        <span id="streak-icon" class="streak-icon">🔥</span>
+        <span id="streak-text" class="streak-text">3 z rzędu!</span>
+      </div>
 
-        <!-- Overlay pauzy — zakotwiczony do question-area -->
+      <!-- Pytanie -->
+      <div class="question-area" id="question-card">
         <div id="game-overlay" class="game-overlay hidden">
           <div class="game-overlay-inner">
             <span id="game-overlay-icon" class="overlay-icon">⏸</span>
             <p id="game-overlay-title" class="overlay-title">Gra wstrzymana</p>
             <p id="game-overlay-sub" class="overlay-sub"></p>
-            <!-- Widoczny TYLKO dla hosta, JS toggle -->
-            <button id="overlay-resume-btn" class="btn btn-primary overlay-resume-btn hidden" type="button">
-              ▶ Wznów grę
-            </button>
+            <button id="overlay-resume-btn" class="btn btn-primary overlay-resume-btn hidden" type="button">▶ Wznów grę</button>
           </div>
         </div>
-
         <div id="question-image-wrap" class="q-image-wrap hidden">
           <img id="question-image" src="" alt="Pytanie" class="q-image" />
         </div>
@@ -119,7 +140,7 @@
       <!-- Status baner -->
       <div id="status-banner" class="status-banner hidden"></div>
 
-      <!-- Pole odpowiedzi -->
+      <!-- Odpowiedź -->
       <div id="guess-wrap" class="guess-row">
         <input type="text" id="guess-input" class="guess-input" placeholder="Wpisz odpowiedź…" autocomplete="off" spellcheck="false" maxlength="100" />
         <button id="guess-btn" class="btn btn-primary">Odpowiedz</button>
@@ -129,16 +150,16 @@
       <div id="reveal-card" class="reveal-area hidden">
         <span class="reveal-label">Prawidłowa odpowiedź</span>
         <span id="reveal-answer" class="reveal-answer"></span>
-        <div class="vote-row" id="vote-row">
+        <div class="vote-row">
           <button id="vote-up"   class="vote-btn vote-up"   title="Dobre pytanie">👍 <span id="vote-up-count">0</span></button>
-          <button id="vote-down" class="vote-btn vote-down" title="Słabe pytanie">👎  <span id="vote-down-count">0</span></button>
+          <button id="vote-down" class="vote-btn vote-down" title="Słabe pytanie">👎 <span id="vote-down-count">0</span></button>
           <span id="vote-disabled-badge" class="vote-disabled hidden">pytanie wyłączone</span>
         </div>
         <span class="reveal-next">Następna runda za <strong id="reveal-countdown">5</strong>s…</span>
       </div>
     </div>
 
-    <!-- Sidebar wyniki -->
+    <!-- Sidebar -->
     <div class="game-sidebar">
       <p class="section-eyebrow">Wyniki</p>
       <div id="game-leaderboard" class="player-list"></div>
@@ -151,7 +172,16 @@
   <div class="gameover-center">
     <div class="trophy">🏆</div>
     <h2 class="gameover-title">Koniec gry!</h2>
+
+    <!-- Podium top 3 -->
     <div id="gameover-leaderboard" class="player-list player-list--wide"></div>
+
+    <!-- Statystyki szczegółowe -->
+    <div class="stats-section" id="stats-section">
+      <p class="section-eyebrow" style="margin-bottom:16px;">Statystyki</p>
+      <div id="stats-grid" class="stats-grid"></div>
+    </div>
+
     <p class="gameover-hint">Powrót do lobby za chwilę…</p>
   </div>
 </div>

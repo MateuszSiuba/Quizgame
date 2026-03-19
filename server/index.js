@@ -47,6 +47,12 @@ const MAX_PLAYERS      = 10;     // max concurrent players
 // ── Categories ────────────────────────────────────────────────────────────────
 const CATEGORIES = ['Wszystkie', ...new Set(questions.map(q => q.category))];
 
+// ── Room Code ────────────────────────────────────────────────────────────────
+function genRoomCode() {
+  return Math.random().toString(36).slice(2, 7).toUpperCase(); // e.g. "X7K2P"
+}
+const ROOM_CODE = genRoomCode();
+
 // ── Game State ────────────────────────────────────────────────────────────────
 const gameState = {
   phase: 'lobby',      // lobby | countdown | playing | paused | reveal
@@ -60,6 +66,7 @@ const gameState = {
   timeLeft: 25,
   selectedCategories: new Set(),
   roundNumber: 0,
+  roomCode: ROOM_CODE,
 };
 
 // ── Timer helpers ─────────────────────────────────────────────────────────────
@@ -176,6 +183,10 @@ function checkAllGuessed() {
 function endRound() {
   stopRoundTimer();
   gameState.phase = 'reveal';
+  // Break streak for players who didn't guess this round
+  gameState.players.forEach(p => {
+    if (!p.hasGuessed) p.stats.streak = 0;
+  });
   const q = gameState.currentQuestion;
   broadcast({
     type: 'round_end',
@@ -207,7 +218,13 @@ function endGame() {
   gameState.currentQuestion = null;
   gameState.questionQueue = [];
   gameState.roundNumber = 0;
-  broadcast({ type: 'game_over', leaderboard: getLeaderboard() });
+  const statsPayload = [...gameState.players.values()].map(p => ({
+    id: p.id, name: p.name, score: p.score,
+    roundsGuessed: p.stats.roundsGuessed,
+    totalAnswerTime: p.stats.totalAnswerTime,
+    bestStreak: p.stats.bestStreak,
+  }));
+  broadcast({ type: 'game_over', leaderboard: getLeaderboard(), stats: statsPayload, totalRounds: gameState.roundNumber });
   setTimeout(() => {
     gameState.players.forEach(p => { p.score = 0; });
     broadcastLobbyState();
@@ -231,6 +248,7 @@ function buildReconnectPayload(playerId) {
     type: 'reconnected',
     playerId,
     isHost: player.id === gameState.hostId,
+    roomCode: gameState.roomCode,
     gamePhase: gameState.phase,
     score: player.score,
     hasGuessed: player.hasGuessed,
@@ -320,6 +338,8 @@ wss.on('connection', (ws) => {
         id, name, token, score: 0,
         hasGuessed: false, wrongGuesses: [], isHost,
         lastGuessAt: 0, lastChatAt: 0,
+        // ── Per-game stats ──────────────────────────────────────────────────
+        stats: { roundsGuessed: 0, totalAnswerTime: 0, streak: 0, bestStreak: 0 },
       };
       gameState.players.set(id, player);
 
@@ -328,6 +348,7 @@ wss.on('connection', (ws) => {
         categories: CATEGORIES,
         selectedCategory: getSelectedCategoryLabel(),
         gamePhase: gameState.phase,
+        roomCode: gameState.roomCode,
       });
 
       if ((gameState.phase === 'playing' || gameState.phase === 'paused') && gameState.currentQuestion) {
@@ -376,7 +397,10 @@ wss.on('connection', (ws) => {
       gameState.questionQueue = buildQueue();
       if (gameState.questionQueue.length === 0)
         return send(ws, { type: 'error', message: 'Brak aktywnych pytań w tej kategorii.' });
-      gameState.players.forEach(p => { p.score = 0; });
+      gameState.players.forEach(p => {
+        p.score = 0;
+        p.stats = { roundsGuessed: 0, totalAnswerTime: 0, streak: 0, bestStreak: 0 };
+      });
       broadcast({ type: 'game_starting', countdown: 3 });
       let cd = 3;
       const cdTimer = setInterval(() => {
@@ -428,7 +452,14 @@ wss.on('connection', (ws) => {
           ? POINTS_FIRST
           : Math.max(POINTS_MIN, Math.round(POINTS_MIN + (POINTS_FIRST - POINTS_MIN) * Math.max(0, 1 - elapsed / ROUND_DURATION)));
         player.score += points;
-        send(ws, { type: 'correct_guess', points, totalScore: player.score });
+        // ── Update stats ────────────────────────────────────────────────────
+        const elapsed2 = ROUND_DURATION - gameState.timeLeft;
+        player.stats.roundsGuessed += 1;
+        player.stats.totalAnswerTime += elapsed2;
+        player.stats.streak += 1;
+        if (player.stats.streak > player.stats.bestStreak)
+          player.stats.bestStreak = player.stats.streak;
+        send(ws, { type: 'correct_guess', points, totalScore: player.score, streak: player.stats.streak });
         broadcastExcept(playerId, { type: 'player_guessed', playerName: player.name, points });
         broadcastLeaderboard();
         if (checkAllGuessed()) { stopRoundTimer(); setTimeout(() => endRound(), 1000); }
@@ -499,5 +530,6 @@ wss.on('connection', (ws) => {
 
 server.listen(PORT, () => {
   console.log(`✅ QuizGame uruchomiony na porcie ${PORT}`);
+  console.log(`🔑 Kod pokoju: ${ROOM_CODE}`);
   console.log(`📚 ${questions.filter(q => !q.disabled).length}/${questions.length} pytań aktywnych`);
 });
