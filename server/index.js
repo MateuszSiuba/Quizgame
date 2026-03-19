@@ -20,8 +20,8 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 // ── Game State ────────────────────────────────────────────────────────────────
 const gameState = {
-  phase: 'lobby',        // lobby | countdown | playing | reveal
-  players: new Map(),    // id -> playerObj
+  phase: 'lobby',
+  players: new Map(),
   hostId: null,
   currentQuestion: null,
   currentQuestionIndex: -1,
@@ -29,7 +29,7 @@ const gameState = {
   roundTimer: null,
   revealTimer: null,
   timeLeft: 25,
-  selectedCategory: 'Wszystkie',
+  selectedCategories: new Set(),   // empty = all
   roundNumber: 0,
 };
 
@@ -95,23 +95,29 @@ function broadcastLeaderboard() {
   broadcast({ type: 'leaderboard', players: getLeaderboard() });
 }
 
+function getSelectedCategoryLabel() {
+  const sel = gameState.selectedCategories;
+  if (sel.size === 0 || sel.size >= CATEGORIES.length - 1) return 'Wszystkie';
+  return [...sel].join(', ');
+}
+
 function broadcastLobbyState() {
   broadcast({
     type: 'lobby_state',
     players: getLeaderboard(),
     hostId: gameState.hostId,
     categories: CATEGORIES,
-    selectedCategory: gameState.selectedCategory,
+    selectedCategory: getSelectedCategoryLabel(),
   });
 }
 
 // ── Question Queue ────────────────────────────────────────────────────────────
-function buildQueue(category) {
-  let pool = category === 'Wszystkie'
+function buildQueue() {
+  const sel = gameState.selectedCategories;
+  let pool = (sel.size === 0 || sel.size >= CATEGORIES.length - 1)
     ? [...questions]
-    : questions.filter(q => q.category === category);
+    : questions.filter(q => sel.has(q.category));
 
-  // Shuffle
   for (let i = pool.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [pool[i], pool[j]] = [pool[j], pool[i]];
@@ -262,7 +268,7 @@ wss.on('connection', (ws) => {
         playerId: id,
         isHost,
         categories: CATEGORIES,
-        selectedCategory: gameState.selectedCategory,
+        selectedCategory: getSelectedCategoryLabel(),
         gamePhase: gameState.phase,
       });
 
@@ -296,10 +302,12 @@ wss.on('connection', (ws) => {
     if (type === 'select_category') {
       if (playerId !== gameState.hostId) return;
       if (gameState.phase !== 'lobby') return;
-      const cat = msg.category;
-      if (!CATEGORIES.includes(cat)) return;
-      gameState.selectedCategory = cat;
-      broadcast({ type: 'category_changed', category: cat });
+      const cats = Array.isArray(msg.categories) ? msg.categories : [msg.category];
+      const valid = cats.filter(c => CATEGORIES.includes(c));
+      if (valid.length === 0) return;
+      gameState.selectedCategories = new Set(valid);
+      const label = getSelectedCategoryLabel();
+      broadcast({ type: 'category_changed', category: label });
       return;
     }
 
@@ -309,7 +317,7 @@ wss.on('connection', (ws) => {
       if (gameState.phase !== 'lobby') return;
       if (gameState.players.size < 1) return;
 
-      gameState.questionQueue = buildQueue(gameState.selectedCategory);
+      gameState.questionQueue = buildQueue();
       if (gameState.questionQueue.length === 0) {
         return send(ws, { type: 'error', message: 'Brak pytań w tej kategorii.' });
       }
