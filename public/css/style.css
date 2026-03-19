@@ -11,8 +11,8 @@
   --dim:        #2a3660;
   --border:     rgba(59,123,255,0.18);
   --surface:    rgba(255,255,255,0.04);
-  --font-head:  'Syne', sans-serif;
-  --font-mono:  'Space Mono', monospace;
+  --font-head:  'Sora', sans-serif;
+  --font-mono:  'Manrope', sans-serif;
 }
 
 /* ── RESET ─────────────────────────────────────────────────────────────────── */
@@ -23,6 +23,9 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-mono);
+  font-weight: 500;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
   line-height: 1.6;
   overflow: hidden; /* key: no scroll between screens */
 }
@@ -67,7 +70,7 @@ input, select, button { font-family: inherit; }
   font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   margin-bottom: 10px;
 }
 .field-label {
@@ -76,7 +79,7 @@ input, select, button { font-family: inherit; }
   font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   margin-bottom: 8px;
 }
 
@@ -105,7 +108,7 @@ input::placeholder { color: var(--dim); }
   border: none; border-radius: 8px; cursor: pointer;
   font-size: 13px; font-weight: 700;
   font-family: var(--font-mono);
-  text-transform: uppercase; letter-spacing: 0.06em;
+  text-transform: none; letter-spacing: 0.02em;
   transition: all 0.15s;
   white-space: nowrap;
 }
@@ -356,7 +359,7 @@ input::placeholder { color: var(--dim); }
 .q-image { width: 100%; max-height: 320px; object-fit: contain; display: block; }
 .q-text {
   font-family: var(--font-head); font-size: 24px; font-weight: 700;
-  text-align: center; line-height: 1.4; color: var(--text);
+  text-align: center; line-height: 1.45; color: var(--text);
 }
 
 /* Status baner */
