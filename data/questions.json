@@ -1,0 +1,386 @@
+[
+  {
+    "id": 1,
+    "category": "Filmy",
+    "type": "image",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/4/4e/Titanic_%281997_film%29_poster.jpg/220px-Titanic_%281997_film%29_poster.jpg",
+    "question_text": "Jaki to film?",
+    "answers": ["titanic"]
+  },
+  {
+    "id": 2,
+    "category": "Filmy",
+    "type": "image",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/8/8a/Avengers_Infinity_War_poster.jpg/220px-Avengers_Infinity_War_poster.jpg",
+    "question_text": "Jaki to film?",
+    "answers": ["avengers infinity war", "avengers", "avengers: infinity war"]
+  },
+  {
+    "id": 3,
+    "category": "Filmy",
+    "type": "image",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/1/1e/The_Lion_King_poster.jpg/220px-The_Lion_King_poster.jpg",
+    "question_text": "Jaki to film?",
+    "answers": ["the lion king", "lion king", "krol lew"]
+  },
+  {
+    "id": 4,
+    "category": "Filmy",
+    "type": "text",
+    "image_url": null,
+    "question_text": "W jakim roku premierę miał film 'Interstellar'?",
+    "answers": ["2014"]
+  },
+  {
+    "id": 5,
+    "category": "Filmy",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Kto wyreżyserował trylogię 'Władca Pierścieni'?",
+    "answers": ["peter jackson", "piotr jackson"]
+  },
+  {
+    "id": 6,
+    "category": "Filmy",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jak nazywa się główny bohater serii 'Indiana Jones'?",
+    "answers": ["indiana jones", "indiana", "indy"]
+  },
+  {
+    "id": 7,
+    "category": "Muzyka",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Który artysta nagrał album 'Thriller'?",
+    "answers": ["michael jackson", "mj"]
+  },
+  {
+    "id": 8,
+    "category": "Muzyka",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Z jakiego kraju pochodzi zespół ABBA?",
+    "answers": ["szwecja", "sweden"]
+  },
+  {
+    "id": 9,
+    "category": "Muzyka",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jak nazywa się wokalistka grupy Evanescence?",
+    "answers": ["amy lee"]
+  },
+  {
+    "id": 10,
+    "category": "Muzyka",
+    "type": "text",
+    "image_url": null,
+    "question_text": "W jakim roku powstała piosenka 'Bohemian Rhapsody' zespołu Queen?",
+    "answers": ["1975"]
+  },
+  {
+    "id": 11,
+    "category": "Muzyka",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jak ma na imię piosenkarka, która nagrała 'Rolling in the Deep'?",
+    "answers": ["adele"]
+  },
+  {
+    "id": 12,
+    "category": "Muzyka",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Który zespół nagrał album 'Dark Side of the Moon'?",
+    "answers": ["pink floyd"]
+  },
+  {
+    "id": 13,
+    "category": "Gry",
+    "type": "image",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/0/0d/Minecraft_logo.png/200px-Minecraft_logo.png",
+    "question_text": "Jaka to gra?",
+    "answers": ["minecraft"]
+  },
+  {
+    "id": 14,
+    "category": "Gry",
+    "type": "text",
+    "image_url": null,
+    "question_text": "W jakiej grze sterujemy Geraltem z Rivii?",
+    "answers": ["wiedźmin", "wiedzmin", "the witcher", "witcher"]
+  },
+  {
+    "id": 15,
+    "category": "Gry",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jak nazywa się główna postać w serii 'The Legend of Zelda'?",
+    "answers": ["link"]
+  },
+  {
+    "id": 16,
+    "category": "Gry",
+    "type": "text",
+    "image_url": null,
+    "question_text": "W jakiej grze walczymy przeciwko Thanosowi w planszówkowej adaptacji?",
+    "answers": ["marvel", "avengers"]
+  },
+  {
+    "id": 17,
+    "category": "Gry",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Ile graczy może zmieścić się w jednej rozgrywce Battle Royale w Fortnite?",
+    "answers": ["100"]
+  },
+  {
+    "id": 18,
+    "category": "Gry",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jaka firma stworzyła grę 'Cyberpunk 2077'?",
+    "answers": ["cd projekt", "cd projekt red", "cdpr"]
+  },
+  {
+    "id": 19,
+    "category": "Polska",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jakie jest największe miasto w Polsce?",
+    "answers": ["warszawa", "warsaw"]
+  },
+  {
+    "id": 20,
+    "category": "Polska",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Ile województw liczy Polska?",
+    "answers": ["16", "szesnaście", "szesnascie"]
+  },
+  {
+    "id": 21,
+    "category": "Polska",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jak nazywa się najwyższy szczyt w Polsce?",
+    "answers": ["rysy"]
+  },
+  {
+    "id": 22,
+    "category": "Polska",
+    "type": "text",
+    "image_url": null,
+    "question_text": "W jakim roku Polska przystąpiła do Unii Europejskiej?",
+    "answers": ["2004"]
+  },
+  {
+    "id": 23,
+    "category": "Polska",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jak nazywa się polska waluta?",
+    "answers": ["zloty", "złoty", "pln"]
+  },
+  {
+    "id": 24,
+    "category": "Polska",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Kto był pierwszym prezydentem RP po 1989 roku?",
+    "answers": ["lech walesa", "walesa", "wałęsa", "lech wałęsa"]
+  },
+  {
+    "id": 25,
+    "category": "Nauka",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jaki jest symbol chemiczny złota?",
+    "answers": ["au"]
+  },
+  {
+    "id": 26,
+    "category": "Nauka",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Ile wynosi przybliżona wartość liczby Pi (2 miejsca po przecinku)?",
+    "answers": ["3.14", "3,14"]
+  },
+  {
+    "id": 27,
+    "category": "Nauka",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Kto odkrył penicylinę?",
+    "answers": ["alexander fleming", "fleming"]
+  },
+  {
+    "id": 28,
+    "category": "Nauka",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Ile kości ma dorosły człowiek?",
+    "answers": ["206"]
+  },
+  {
+    "id": 29,
+    "category": "Nauka",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jaka jest prędkość światła (w km/s, w przybliżeniu)?",
+    "answers": ["300000", "299792"]
+  },
+  {
+    "id": 30,
+    "category": "Nauka",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Kto napisał teorię względności?",
+    "answers": ["albert einstein", "einstein"]
+  },
+  {
+    "id": 31,
+    "category": "Sport",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Ile graczy gra w drużynie piłki nożnej (w tym bramkarz)?",
+    "answers": ["11", "jedenaście", "jedenascie"]
+  },
+  {
+    "id": 32,
+    "category": "Sport",
+    "type": "text",
+    "image_url": null,
+    "question_text": "W jakim kraju odbyły się Letnie Igrzyska Olimpijskie 2024?",
+    "answers": ["francja", "france"]
+  },
+  {
+    "id": 33,
+    "category": "Sport",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jak nazywa się siatkarka, która jest ikoną polskiej siatkówki kobiecej?",
+    "answers": ["malwina smarzek", "smarzek"]
+  },
+  {
+    "id": 34,
+    "category": "Sport",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Ile setów liczy mecz tenisa w Wielkim Szlemie (dla mężczyzn)?",
+    "answers": ["5", "piec", "pięć"]
+  },
+  {
+    "id": 35,
+    "category": "Sport",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Kto jest rekordzistą świata w biegu na 100 metrów?",
+    "answers": ["usain bolt", "bolt"]
+  },
+  {
+    "id": 36,
+    "category": "Sport",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jakie miasto gości klub piłkarski Real Madrid?",
+    "answers": ["madryt", "madrid"]
+  },
+  {
+    "id": 37,
+    "category": "Seriale",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jaki serial rozgrywa się w fikcyjnym Westeros?",
+    "answers": ["gra o tron", "game of thrones"]
+  },
+  {
+    "id": 38,
+    "category": "Seriale",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jak nazywa się chemik, który gotuje metamfetaminę w serialu AMC?",
+    "answers": ["walter white", "heisenberg", "walter"]
+  },
+  {
+    "id": 39,
+    "category": "Seriale",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Ile sezonów liczy serial 'Przyjaciele' (Friends)?",
+    "answers": ["10", "dziesiec", "dziesięć"]
+  },
+  {
+    "id": 40,
+    "category": "Seriale",
+    "type": "text",
+    "image_url": null,
+    "question_text": "W jakim mieście rozgrywa się akcja serialu 'Stranger Things'?",
+    "answers": ["hawkins"]
+  },
+  {
+    "id": 41,
+    "category": "Seriale",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jak nazywa się żółty kucharz z serialu animowanego SpongeBob?",
+    "answers": ["spongebob", "sponge bob", "gąbka bob", "gabka bob"]
+  },
+  {
+    "id": 42,
+    "category": "Seriale",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Który serwis streamingowy wyprodukował serial 'The Crown'?",
+    "answers": ["netflix"]
+  },
+  {
+    "id": 43,
+    "category": "Gotowanie",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Z jakiego kraju pochodzi pizza Margherita?",
+    "answers": ["wlochy", "włochy", "italy", "italia"]
+  },
+  {
+    "id": 44,
+    "category": "Gotowanie",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jaki składnik nadaje chlebowi żółty kolor w kurkumowym przepisie?",
+    "answers": ["kurkuma", "turmeric"]
+  },
+  {
+    "id": 45,
+    "category": "Gotowanie",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jak nazywa się japońska potrawa z surowej ryby?",
+    "answers": ["sushi", "sashimi"]
+  },
+  {
+    "id": 46,
+    "category": "Gotowanie",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jaka polska zupa jest gotowana z buraków?",
+    "answers": ["barszcz"]
+  },
+  {
+    "id": 47,
+    "category": "Gotowanie",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Z czego robi się tradycyjne włoskie risotto?",
+    "answers": ["ryż", "ryz", "rice"]
+  },
+  {
+    "id": 48,
+    "category": "Gotowanie",
+    "type": "text",
+    "image_url": null,
+    "question_text": "Jak nazywa się meksykańskie danie z tortillą, mięsem i salsą?",
+    "answers": ["taco", "tacos"]
+  }
+]
