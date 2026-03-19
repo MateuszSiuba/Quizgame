@@ -82,6 +82,7 @@ const gameOverlay       = $('game-overlay');
 const gameOverlayIcon   = $('game-overlay-icon');
 const gameOverlayTitle  = $('game-overlay-title');
 const gameOverlaySub    = $('game-overlay-sub');
+const overlayResumeBtn  = $('overlay-resume-btn');
 
 // Vote
 const voteUp            = $('vote-up');
@@ -349,6 +350,8 @@ function handleMessage(msg) {
       state.isHost = true;
       setupLobbyUI();
       updatePauseButton();
+      // Jeśli gra jest wstrzymana, pokaż przycisk Wznów w overlay
+      if (state.roundPaused && overlayResumeBtn) overlayResumeBtn.classList.remove('hidden');
       appendChat({ system: true, message: 'Zostałeś/aś hostem gry.' });
       break;
     }
@@ -368,6 +371,8 @@ function showGameOverlay(icon, title, sub) {
   gameOverlayIcon.textContent  = icon;
   gameOverlayTitle.textContent = title;
   gameOverlaySub.textContent   = sub || '';
+  // Pokaż przycisk Wznów tylko hostowi
+  if (overlayResumeBtn) overlayResumeBtn.classList.toggle('hidden', !state.isHost);
   gameOverlay.classList.remove('hidden');
 }
 function hideGameOverlay() {
@@ -695,6 +700,8 @@ function updatePauseButton() {
   const show = state.isHost && (state.phase === 'playing' || state.phase === 'paused');
   pauseBtn.classList.toggle('hidden', !show);
   pauseBtn.textContent = state.roundPaused ? '▶ Wznów' : '⏸ Wstrzymaj';
+  // Sync overlay resume button visibility
+  if (overlayResumeBtn) overlayResumeBtn.classList.toggle('hidden', !state.isHost);
 }
 
 // ── Events ────────────────────────────────────────────────────────────────────
@@ -736,6 +743,14 @@ pauseBtn.addEventListener('click', () => {
   if (!state.isHost) return;
   wsSend({ type: 'toggle_pause' });
 });
+
+// Przycisk Wznów w overlayu pauzy — tylko host, działa tak samo
+if (overlayResumeBtn) {
+  overlayResumeBtn.addEventListener('click', () => {
+    if (!state.isHost || !state.roundPaused) return;
+    wsSend({ type: 'toggle_pause' });
+  });
+}
 
 guessBtn.addEventListener('click', submitGuess);
 guessInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitGuess(); });
