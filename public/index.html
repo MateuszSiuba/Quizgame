@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuizGame – Multiplayer Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- ── SCREEN: LOGIN ─────────────────────────────────────────────────── -->
+  <div id="screen-login" class="screen active">
+    <div class="login-bg">
+      <div class="orb orb1"></div>
+      <div class="orb orb2"></div>
+      <div class="orb orb3"></div>
+    </div>
+    <div class="login-card">
+      <div class="logo-wrap">
+        <span class="logo-icon">🎯</span>
+        <h1 class="logo-text">QuizGame</h1>
+        <p class="logo-sub">Multiplayer Quiz po Polsku</p>
+      </div>
+      <div class="form-group">
+        <label for="username-input">Twój pseudonim</label>
+        <input
+          type="text"
+          id="username-input"
+          maxlength="20"
+          placeholder="np. SuperGracz99"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+      <button id="join-btn" class="btn btn-primary">
+        <span class="btn-text">Dołącz</span>
+        <span class="btn-icon">→</span>
+      </button>
+      <div id="login-error" class="error-msg hidden"></div>
+      <div id="login-spinner" class="spinner-wrap hidden">
+        <div class="spinner"></div>
+        <span>Łączenie…</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: LOBBY ─────────────────────────────────────────────────── -->
+  <div id="screen-lobby" class="screen">
+    <div class="game-layout">
+      <!-- Main -->
+      <div class="main-area">
+        <div class="card lobby-card">
+          <div class="lobby-status">
+            <div class="pulse-dot"></div>
+            <span>Oczekiwanie na graczy…</span>
+          </div>
+
+          <div id="host-controls" class="host-controls hidden">
+            <h3 class="host-label">Kontrolki hosta</h3>
+            <div class="form-group">
+              <label for="category-select">Kategoria</label>
+              <select id="category-select" class="select-input"></select>
+            </div>
+            <button id="start-btn" class="btn btn-primary btn-large">
+              <span class="btn-text">Rozpocznij grę</span>
+              <span class="btn-icon">▶</span>
+            </button>
+          </div>
+
+          <div id="guest-controls" class="guest-controls hidden">
+            <p class="guest-hint">Poczekaj aż host rozpocznie grę…</p>
+            <div class="category-badge">
+              Kategoria: <strong id="lobby-category-display">Wszystkie</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat -->
+        <div class="card chat-card">
+          <h3 class="section-title">Czat lobby</h3>
+          <div id="chat-messages" class="chat-messages"></div>
+          <div class="chat-input-row">
+            <input type="text" id="chat-input" placeholder="Napisz wiadomość…" maxlength="200" />
+            <button id="chat-send-btn" class="btn btn-secondary">Wyślij</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar: Leaderboard -->
+      <aside class="sidebar">
+        <div class="card sidebar-card">
+          <h3 class="section-title">Gracze</h3>
+          <div id="lobby-leaderboard" class="leaderboard-list"></div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Countdown overlay -->
+    <div id="countdown-overlay" class="countdown-overlay hidden">
+      <div class="countdown-box">
+        <span class="countdown-label">Gra zaczyna się za</span>
+        <span id="countdown-number" class="countdown-number">3</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: GAME ───────────────────────────────────────────────────── -->
+  <div id="screen-game" class="screen">
+    <div class="game-layout">
+      <!-- Main -->
+      <div class="main-area">
+        <!-- Timer -->
+        <div class="timer-wrap">
+          <div class="timer-bar-bg">
+            <div id="timer-bar" class="timer-bar"></div>
+          </div>
+          <div class="timer-info">
+            <span id="round-label" class="round-label">Runda 1</span>
+            <span id="timer-display" class="timer-display">25</span>
+            <span id="category-label" class="category-label">Kategoria</span>
+          </div>
+        </div>
+
+        <!-- Question card -->
+        <div class="card question-card" id="question-card">
+          <div id="question-image-wrap" class="question-image-wrap hidden">
+            <img id="question-image" src="" alt="Pytanie" class="question-image" />
+          </div>
+          <p id="question-text" class="question-text"></p>
+        </div>
+
+        <!-- Status banner -->
+        <div id="status-banner" class="status-banner hidden"></div>
+
+        <!-- Input -->
+        <div class="guess-wrap" id="guess-wrap">
+          <input
+            type="text"
+            id="guess-input"
+            class="guess-input"
+            placeholder="Wpisz odpowiedź…"
+            autocomplete="off"
+            spellcheck="false"
+            maxlength="100"
+          />
+          <button id="guess-btn" class="btn btn-primary">Odpowiedz</button>
+        </div>
+
+        <!-- Reveal card -->
+        <div id="reveal-card" class="card reveal-card hidden">
+          <span class="reveal-label">Prawidłowa odpowiedź:</span>
+          <span id="reveal-answer" class="reveal-answer"></span>
+          <span id="reveal-next" class="reveal-next">Następna runda za <strong id="reveal-countdown">5</strong>s…</span>
+        </div>
+      </div>
+
+      <!-- Sidebar: Leaderboard + players' guesses -->
+      <aside class="sidebar">
+        <div class="card sidebar-card">
+          <h3 class="section-title">Wyniki</h3>
+          <div id="game-leaderboard" class="leaderboard-list"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: GAME OVER ──────────────────────────────────────────────── -->
+  <div id="screen-gameover" class="screen">
+    <div class="gameover-wrap">
+      <div class="card gameover-card">
+        <div class="trophy-icon">🏆</div>
+        <h2 class="gameover-title">Koniec gry!</h2>
+        <div id="gameover-leaderboard" class="leaderboard-list"></div>
+        <p class="gameover-hint">Powrót do lobby za chwilę…</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/client.js"></script>
+</body>
+</html>
