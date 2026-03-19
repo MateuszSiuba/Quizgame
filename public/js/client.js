@@ -66,37 +66,134 @@ const confetti = (() => {
   };
 })();
 
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  AVATAR ENGINE — deterministic color + initials, no external deps
+// ══════════════════════════════════════════════════════════════════════════════
+const avatar = (() => {
+  // 12 distinct, accessible palette colors
+  const PALETTE = [
+    '#3b7bff','#00d4ff','#2ecc71','#e74c3c','#9b59b6',
+    '#f39c12','#1abc9c','#e91e8c','#ff6b35','#27ae60',
+    '#8e44ad','#c0392b',
+  ];
+
+  function hashName(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+    return h;
+  }
+
+  function initials(name) {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  }
+
+  function colorFor(name) {
+    return PALETTE[hashName(name) % PALETTE.length];
+  }
+
+  // Returns an <div class="avatar"> element
+  function make(name, size = 32) {
+    const el = document.createElement('div');
+    el.className = 'avatar';
+    el.style.cssText = `
+      width:${size}px; height:${size}px; border-radius:50%;
+      background:${colorFor(name)};
+      display:inline-flex; align-items:center; justify-content:center;
+      font-size:${Math.round(size * 0.38)}px; font-weight:800;
+      color:#fff; flex-shrink:0; user-select:none;
+      font-family:var(--font-head); letter-spacing:0.02em;
+    `;
+    el.textContent = initials(name);
+    el.title = name;
+    return el;
+  }
+
+  return { make, colorFor, initials };
+})();
+
 // ══════════════════════════════════════════════════════════════════════════════
 //  AUDIO ENGINE — Web Audio API, zero files
+//  Volume: all gainPeak values intentionally quiet (≤ 0.18)
+//  Mute:   audio.muted = true skips all playback
 // ══════════════════════════════════════════════════════════════════════════════
 const audio = (() => {
-  let ctx = null;
+  let ctx  = null;
+  let muted = localStorage.getItem('qg_muted') === '1';
+
   function getCtx() {
     if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
     if (ctx.state === 'suspended') ctx.resume();
     return ctx;
   }
-  function tone({ freq=440, type='sine', gainPeak=0.35,
-                  attack=0.01, decay=0.08, release=0.12, duration=0.22, detune=0 }={}) {
+
+  // Core tone primitive — all volumes kept quiet by default
+  function tone({ freq=440, type='sine', gainPeak=0.12,
+                  attack=0.008, decay=0.1, release=0.15, duration=0.25, detune=0 }={}) {
+    if (muted) return;
     try {
       const c=getCtx(), osc=c.createOscillator(), env=c.createGain();
       osc.connect(env); env.connect(c.destination);
       osc.type=type; osc.frequency.value=freq; osc.detune.value=detune;
       const t=c.currentTime;
-      env.gain.setValueAtTime(0,t);
+      env.gain.setValueAtTime(0, t);
       env.gain.linearRampToValueAtTime(gainPeak, t+attack);
-      env.gain.linearRampToValueAtTime(0.001, t+attack+decay+release);
+      env.gain.linearRampToValueAtTime(0.0001, t+attack+decay+release);
       osc.start(t); osc.stop(t+duration+0.05);
     } catch(_) {}
   }
+
   return {
-    correct() {
-      tone({ freq:523, type:'triangle', gainPeak:0.4, attack:0.005, decay:0.06, release:0.18, duration:0.28 });
-      setTimeout(() => tone({ freq:784, type:'triangle', gainPeak:0.32, attack:0.005, decay:0.05, release:0.22, duration:0.32 }), 100);
+    get muted() { return muted; },
+
+    toggleMute() {
+      muted = !muted;
+      localStorage.setItem('qg_muted', muted ? '1' : '0');
+      return muted;
     },
-    tick(t) {
-      const freq = 280 + (6 - t) * 28;
-      tone({ freq, type:'square', gainPeak:0.15, attack:0.004, decay:0.04, release:0.06, duration:0.08 });
+
+    // ✅ Correct answer — soft two-note chime (triangle = mellow)
+    correct() {
+      tone({ freq:523, type:'triangle', gainPeak:0.13, attack:0.006, decay:0.08, release:0.2,  duration:0.26 });
+      setTimeout(() =>
+        tone({ freq:784, type:'triangle', gainPeak:0.10, attack:0.006, decay:0.06, release:0.22, duration:0.30 })
+      , 110);
+    },
+
+    // ⏱ Tick — last 5 s, very subtle square blip
+    tick(timeLeft) {
+      const freq = 300 + (6 - timeLeft) * 22;
+      tone({ freq, type:'square', gainPeak:0.07, attack:0.003, decay:0.03, release:0.05, duration:0.07 });
+    },
+
+    // 3-2-1 countdown beeps — rising pitch, soft sine
+    countdown(n) {
+      if (n === 0) {
+        // "Go!" — short upward chord
+        tone({ freq:523, type:'sine', gainPeak:0.14, attack:0.005, decay:0.05, release:0.18, duration:0.24 });
+        setTimeout(() => tone({ freq:659, type:'sine', gainPeak:0.11, attack:0.005, decay:0.04, release:0.18, duration:0.24 }), 80);
+        setTimeout(() => tone({ freq:784, type:'sine', gainPeak:0.09, attack:0.005, decay:0.04, release:0.20, duration:0.28 }), 160);
+      } else {
+        // 3, 2, 1 — single soft blip, pitch rises each time
+        const freqs = { 3: 330, 2: 370, 1: 415 };
+        tone({ freq: freqs[n] || 370, type:'sine', gainPeak:0.11, attack:0.006, decay:0.06, release:0.12, duration:0.18 });
+      }
+    },
+
+    // 🏆 Game over fanfare — three ascending notes
+    fanfare() {
+      [0, 130, 260].forEach((delay, i) => {
+        const freqs = [392, 523, 659];
+        setTimeout(() => tone({ freq:freqs[i], type:'triangle', gainPeak:0.10, attack:0.01, decay:0.1, release:0.25, duration:0.35 }), delay);
+      });
+    },
+
+    // ⚡ Double points jingle — two quick high pings
+    doublePoints() {
+      tone({ freq:880, type:'sine', gainPeak:0.10, attack:0.004, decay:0.04, release:0.10, duration:0.14 });
+      setTimeout(() => tone({ freq:1108, type:'sine', gainPeak:0.08, attack:0.004, decay:0.04, release:0.10, duration:0.14 }), 120);
     },
   };
 })();
@@ -133,6 +230,10 @@ const state = {
   disconnectedInGame: false,
   roomCode: null,
   myStreak: 0,
+  muted: false,
+  scoreLimit: 100,
+  scoreLimitOptions: [100,150,200],
+  isDoublePoints: false,
 };
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -193,6 +294,11 @@ const voteDisabledBadge    = $('vote-disabled-badge');
 const gameoverLeaderboard  = $('gameover-leaderboard');
 const statsGrid            = $('stats-grid');
 const reconnectSub         = $('reconnect-sub');
+const scoreLimitChips      = $('score-limit-chips');
+const scoreLimitLabel      = $('score-limit-label');
+const guestScoreLimit      = $('guest-score-limit');
+const doubleBanner         = $('double-banner');
+const reactBar             = $('react-bar');
 const reconnectCancel      = $('reconnect-cancel');
 const streakBadge          = $('streak-badge');
 const streakText           = $('streak-text');
@@ -337,6 +443,8 @@ function handleMessage(msg) {
       localStorage.setItem(LS_PID,   msg.playerId);
       loginSpinner.classList.add('hidden');
       setRoomCode(msg.roomCode);
+      if (msg.scoreLimit) { state.scoreLimit = msg.scoreLimit; updateScoreLimitUI(msg.scoreLimit); }
+      if (msg.scoreLimitOptions) state.scoreLimitOptions = msg.scoreLimitOptions;
       buildCategoryChips();
       setupLobbyUI();
       if (msg.selectedCategory) applyServerCategories(msg.selectedCategory);
@@ -379,15 +487,23 @@ function handleMessage(msg) {
       if (msg.players) { msg.players.forEach(p => state.playerNames.set(p.id, p.name)); renderPlayerList(lobbyLeaderboard, msg.players, false); }
       if (msg.hostId !== undefined) { const was = state.isHost; state.isHost = (msg.hostId === state.playerId); if (state.isHost !== was) setupLobbyUI(); }
       if (msg.selectedCategory) applyServerCategories(msg.selectedCategory);
+      if (msg.scoreLimit) { state.scoreLimit = msg.scoreLimit; updateScoreLimitUI(msg.scoreLimit); }
       break;
     }
 
     case 'category_changed': { applyServerCategories(msg.category); break; }
+
+    case 'score_limit_changed': {
+      state.scoreLimit = msg.scoreLimit;
+      updateScoreLimitUI(msg.scoreLimit);
+      break;
+    }
     case 'chat': { appendChat(msg); break; }
 
     case 'game_starting': {
       countdownOverlay.classList.remove('hidden');
       countdownNumber.textContent = msg.countdown;
+      audio.countdown(msg.countdown);
       break;
     }
     case 'game_countdown': {
@@ -395,11 +511,19 @@ function handleMessage(msg) {
       countdownNumber.style.animation = 'none';
       void countdownNumber.offsetWidth;
       countdownNumber.style.animation = '';
+      audio.countdown(msg.countdown);
       if (msg.countdown <= 0) countdownOverlay.classList.add('hidden');
       break;
     }
 
     case 'round_start': { startRound(msg); break; }
+
+    case 'double_points_round': {
+      state.isDoublePoints = true;
+      showDoubleBanner();
+      audio.doublePoints();
+      break;
+    }
     case 'timer_tick':  { updateTimer(msg.timeLeft); break; }
 
     case 'game_paused': {
@@ -423,7 +547,8 @@ function handleMessage(msg) {
       state.myStreak = msg.streak || (state.myStreak + 1);
       disableGuessInput('Już odpowiedziałeś/aś!');
       audio.correct();
-      showBanner(`Zgadłeś! +${msg.points} pkt 🎉`, 'success');
+      const bonusLabel = msg.multiplier > 1 ? ` ⚡x${msg.multiplier}` : '';
+      showBanner(`Zgadłeś!${bonusLabel} +${msg.points} pkt 🎉`, 'success');
       state.playerGuessed.set(state.playerId, true);
       // Confetti burst at guess input position
       const rect = guessInput.getBoundingClientRect();
@@ -476,6 +601,11 @@ function handleMessage(msg) {
       break;
     }
 
+    case 'reaction': {
+      showReaction(msg.playerId, msg.playerName, msg.emoji);
+      break;
+    }
+
     case 'player_disconnected': {
       state.playerDisconnected.add(msg.playerId);
       appendChat({ system: true, message: `${msg.playerName} stracił(a) połączenie…` });
@@ -483,6 +613,19 @@ function handleMessage(msg) {
       break;
     }
   }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  DOUBLE POINTS BANNER
+// ══════════════════════════════════════════════════════════════════════════════
+function showDoubleBanner() {
+  if (!doubleBanner) return;
+  doubleBanner.classList.remove('hidden');
+  doubleBanner.style.animation = 'none';
+  void doubleBanner.offsetWidth;
+  doubleBanner.style.animation = '';
+  clearTimeout(doubleBanner._t);
+  doubleBanner._t = setTimeout(() => doubleBanner.classList.add('hidden'), 4000);
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -507,6 +650,35 @@ function showStreakBadge(streak) {
 
   clearTimeout(streakHideTimer);
   streakHideTimer = setTimeout(() => streakBadge.classList.add('hidden'), 3000);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  EMOJI REACTIONS — float above player in leaderboard
+// ══════════════════════════════════════════════════════════════════════════════
+function showReaction(playerId, playerName, emoji) {
+  // Find player row in any visible leaderboard
+  const lists = [gameLeaderboard, lobbyLeaderboard].filter(Boolean);
+  let anchor = null;
+  for (const list of lists) {
+    list.querySelectorAll('.pl-item').forEach(item => {
+      const nameEl = item.querySelector('.pl-name');
+      if (!nameEl) return;
+      const raw = nameEl.childNodes[0]?.textContent?.trim();
+      if (raw === playerName) anchor = item;
+    });
+    if (anchor) break;
+  }
+  // Fall back: sidebar top-right area
+  const container = anchor || gameLeaderboard || document.body;
+  const rect = container.getBoundingClientRect();
+
+  const el = document.createElement('div');
+  el.className = 'reaction-float';
+  el.textContent = emoji;
+  el.style.left  = (rect.left + rect.width / 2 - 16) + 'px';
+  el.style.top   = (rect.top - 10) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1800);
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -563,6 +735,19 @@ function setupLobbyUI() {
   guestControls.classList.toggle('hidden', state.isHost);
 }
 
+function updateScoreLimitUI(limit) {
+  // Sync host chips
+  if (scoreLimitChips) {
+    scoreLimitChips.querySelectorAll('.score-chip').forEach(btn => {
+      btn.classList.toggle('selected', Number(btn.dataset.limit) === limit);
+    });
+  }
+  // Guest display
+  if (guestScoreLimit) guestScoreLimit.textContent = limit + ' pkt';
+  // In-game label
+  if (scoreLimitLabel) scoreLimitLabel.textContent = 'Do ' + limit + ' pkt';
+}
+
 // ══════════════════════════════════════════════════════════════════════════════
 //  CHAT
 // ══════════════════════════════════════════════════════════════════════════════
@@ -597,11 +782,15 @@ function renderPlayerList(container, players, showGame) {
     const guessed = showGame && state.playerGuessed.get(p.id);
     const wrongs  = showGame ? (state.playerWrongGuesses.get(p.id)||[]) : [];
 
-    item.innerHTML = `<div class="pl-main">
+    const av = avatar.make(p.name, 28);
+    const mainRow = document.createElement('div');
+    mainRow.className = 'pl-main';
+    mainRow.innerHTML = `
       <span class="pl-rank ${rc}">${rank}</span>
       <span class="pl-name">${esc(p.name)}${guessed?'<span class="pl-ok">✓</span>':''}</span>
-      <span class="pl-score">${p.score} pkt</span>
-    </div>`;
+      <span class="pl-score">${p.score} pkt</span>`;
+    mainRow.insertBefore(av, mainRow.children[1]);
+    item.appendChild(mainRow);
 
     if (wrongs.length > 0) {
       const row = document.createElement('div'); row.className = 'pl-wrongs';
@@ -685,9 +874,13 @@ function startRound(msg) {
 
   showScreen('game'); state.phase = 'playing';
   hideGameOverlay(); streakBadge.classList.add('hidden');
+  state.isDoublePoints = msg.isDoublePoints || false;
+  if (state.isDoublePoints) showDoubleBanner();
+  if (doubleBanner && !state.isDoublePoints) doubleBanner.classList.add('hidden');
 
   roundLabel.textContent    = `Runda ${msg.roundNumber}`;
   categoryLabel.textContent = msg.category || '';
+  if (scoreLimitLabel) scoreLimitLabel.textContent = `Do ${state.scoreLimit} pkt`;
 
   if (msg.questionType==='image' && msg.imageUrl) {
     questionImageWrap.classList.remove('hidden');
@@ -790,6 +983,7 @@ function gameOver(msg) {
   if (msg.stats) renderStats(msg.stats, msg.totalRounds || 0);
   // Winner confetti
   confetti.celebrate();
+  audio.fanfare();
   showScreen('gameover');
   setTimeout(() => {
     showScreen('lobby'); setupLobbyUI();
@@ -827,6 +1021,16 @@ joinBtn.addEventListener('click', () => {
 usernameInput.addEventListener('keydown', e => { if (e.key==='Enter') joinBtn.click(); });
 
 startBtn.addEventListener('click', () => { if (state.isHost) wsSend({ type:'start_game' }); });
+
+// Score limit chips (host only)
+if (scoreLimitChips) {
+  scoreLimitChips.addEventListener('click', e => {
+    const btn = e.target.closest('.score-chip');
+    if (!btn || !state.isHost) return;
+    const limit = Number(btn.dataset.limit);
+    wsSend({ type: 'set_score_limit', limit });
+  });
+}
 pauseBtn.addEventListener('click', () => { if (state.isHost) wsSend({ type:'toggle_pause' }); });
 if (overlayResumeBtn) overlayResumeBtn.addEventListener('click', () => { if (state.isHost && state.roundPaused) wsSend({ type:'toggle_pause' }); });
 
@@ -854,6 +1058,32 @@ function submitVote(dir) {
   voteDown.classList.toggle('voted', dir==='down');
   voteUp.disabled = voteDown.disabled = true;
   wsSend({ type:'vote_question', questionId:state.currentQuestionId, vote:dir });
+}
+
+// Emoji reaction buttons
+if (reactBar) {
+  reactBar.addEventListener('click', e => {
+    const btn = e.target.closest('.react-btn');
+    if (!btn) return;
+    wsSend({ type: 'react', emoji: btn.dataset.emoji });
+    // Brief visual feedback
+    btn.classList.add('react-sent');
+    setTimeout(() => btn.classList.remove('react-sent'), 400);
+  });
+}
+
+// Mute toggle
+const muteBtn = $('mute-btn');
+const muteIcon = $('mute-icon');
+if (muteBtn) {
+  // Restore saved state on load
+  if (audio.muted && muteIcon) muteIcon.textContent = '🔇';
+
+  muteBtn.addEventListener('click', () => {
+    const nowMuted = audio.toggleMute();
+    if (muteIcon) muteIcon.textContent = nowMuted ? '🔇' : '🔊';
+    muteBtn.title = nowMuted ? 'Włącz dźwięk' : 'Wycisz';
+  });
 }
 
 reconnectCancel.addEventListener('click', () => {

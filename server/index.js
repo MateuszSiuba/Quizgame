@@ -42,7 +42,9 @@ const POINTS_MIN       = 2;
 const COOLDOWN_GUESS   = 350;    // ms anti-spam for guesses
 const COOLDOWN_CHAT    = 400;    // ms anti-spam for chat
 const RECONNECT_WINDOW = 30000;  // 30 s to reconnect before slot expires
-const MAX_PLAYERS      = 10;     // max concurrent players
+const MAX_PLAYERS        = 10;     // max concurrent players
+const SCORE_LIMIT_OPTIONS = [100, 150, 200]; // valid score limits
+const COOLDOWN_REACT      = 1500;   // ms between emoji reactions per player
 
 // ── Categories ────────────────────────────────────────────────────────────────
 const CATEGORIES = ['Wszystkie', ...new Set(questions.map(q => q.category))];
@@ -67,6 +69,9 @@ const gameState = {
   selectedCategories: new Set(),
   roundNumber: 0,
   roomCode: ROOM_CODE,
+  scoreLimit: 100,          // target score chosen by host
+  doublePointsRounds: new Set(), // set of roundNumbers that are 2x
+  isDoublePoints: false,
 };
 
 // ── Timer helpers ─────────────────────────────────────────────────────────────
@@ -135,6 +140,7 @@ function broadcastLobbyState() {
     hostId: gameState.hostId,
     categories: CATEGORIES,
     selectedCategory: getSelectedCategoryLabel(),
+    scoreLimit: gameState.scoreLimit,
   });
 }
 
@@ -171,6 +177,11 @@ function startNextRound() {
     category: q.category,
     questionId: q.id,
   });
+  const isDouble = gameState.doublePointsRounds.has(gameState.roundNumber);
+  gameState.isDoublePoints = isDouble;
+  if (isDouble) {
+    setTimeout(() => broadcast({ type: 'double_points_round', roundNumber: gameState.roundNumber }), 300);
+  }
   broadcastLeaderboard();
   startRoundTimer();
 }
@@ -213,10 +224,21 @@ function togglePause(player) {
   }
 }
 
+function endGameEarly(winner) {
+  stopRoundTimer();
+  if (gameState.revealTimer) { clearTimeout(gameState.revealTimer); gameState.revealTimer = null; }
+  // Brief reveal of current answer then game_over
+  const q = gameState.currentQuestion;
+  broadcast({ type: 'round_end', answer: q.answers[0], questionId: q.id, votes: q.votes, leaderboard: getLeaderboard(), nextRoundIn: 3 });
+  setTimeout(() => endGame(), 3000);
+}
+
 function endGame() {
   gameState.phase = 'lobby';
   gameState.currentQuestion = null;
   gameState.questionQueue = [];
+  gameState.isDoublePoints = false;
+  const finishedRounds = gameState.roundNumber;
   gameState.roundNumber = 0;
   const statsPayload = [...gameState.players.values()].map(p => ({
     id: p.id, name: p.name, score: p.score,
@@ -224,7 +246,7 @@ function endGame() {
     totalAnswerTime: p.stats.totalAnswerTime,
     bestStreak: p.stats.bestStreak,
   }));
-  broadcast({ type: 'game_over', leaderboard: getLeaderboard(), stats: statsPayload, totalRounds: gameState.roundNumber });
+  broadcast({ type: 'game_over', leaderboard: getLeaderboard(), stats: statsPayload, totalRounds: finishedRounds });
   setTimeout(() => {
     gameState.players.forEach(p => { p.score = 0; });
     broadcastLobbyState();
@@ -349,6 +371,8 @@ wss.on('connection', (ws) => {
         selectedCategory: getSelectedCategoryLabel(),
         gamePhase: gameState.phase,
         roomCode: gameState.roomCode,
+        scoreLimit: gameState.scoreLimit,
+        scoreLimitOptions: SCORE_LIMIT_OPTIONS,
       });
 
       if ((gameState.phase === 'playing' || gameState.phase === 'paused') && gameState.currentQuestion) {
@@ -379,6 +403,16 @@ wss.on('connection', (ws) => {
     if (!playerId || !gameState.players.has(playerId)) return;
     const player = gameState.players.get(playerId);
 
+    // ── SET SCORE LIMIT ──────────────────────────────────────────────────────
+    if (type === 'set_score_limit') {
+      if (playerId !== gameState.hostId || gameState.phase !== 'lobby') return;
+      const limit = Number(msg.limit);
+      if (!SCORE_LIMIT_OPTIONS.includes(limit)) return;
+      gameState.scoreLimit = limit;
+      broadcast({ type: 'score_limit_changed', scoreLimit: limit });
+      return;
+    }
+
     // ── SELECT CATEGORY ───────────────────────────────────────────────────────
     if (type === 'select_category') {
       if (playerId !== gameState.hostId || gameState.phase !== 'lobby') return;
@@ -401,6 +435,18 @@ wss.on('connection', (ws) => {
         p.score = 0;
         p.stats = { roundsGuessed: 0, totalAnswerTime: 0, streak: 0, bestStreak: 0 };
       });
+      // ── Schedule double-points rounds ───────────────────────────────────────
+      const totalRounds = gameState.questionQueue.length;
+      const dpCount = gameState.scoreLimit === 100 ? 2 : gameState.scoreLimit === 150 ? 3 : 4;
+      gameState.doublePointsRounds = new Set();
+      // Spread them evenly, avoid round 1
+      const step = Math.floor(totalRounds / (dpCount + 1));
+      for (let i = 1; i <= dpCount; i++) {
+        let rn = step * i + Math.floor(Math.random() * Math.max(1, step / 2) - step / 4);
+        rn = Math.max(2, Math.min(totalRounds, Math.round(rn)));
+        gameState.doublePointsRounds.add(rn);
+      }
+      gameState.isDoublePoints = false;
       broadcast({ type: 'game_starting', countdown: 3 });
       let cd = 3;
       const cdTimer = setInterval(() => {
@@ -451,7 +497,9 @@ wss.on('connection', (ws) => {
         const points = soFar === 1
           ? POINTS_FIRST
           : Math.max(POINTS_MIN, Math.round(POINTS_MIN + (POINTS_FIRST - POINTS_MIN) * Math.max(0, 1 - elapsed / ROUND_DURATION)));
-        player.score += points;
+        const multiplier = gameState.isDoublePoints ? 2 : 1;
+        const finalPoints = points * multiplier;
+        player.score += finalPoints;
         // ── Update stats ────────────────────────────────────────────────────
         const elapsed2 = ROUND_DURATION - gameState.timeLeft;
         player.stats.roundsGuessed += 1;
@@ -459,14 +507,32 @@ wss.on('connection', (ws) => {
         player.stats.streak += 1;
         if (player.stats.streak > player.stats.bestStreak)
           player.stats.bestStreak = player.stats.streak;
-        send(ws, { type: 'correct_guess', points, totalScore: player.score, streak: player.stats.streak });
+        player.stats.totalAnswerTime += ROUND_DURATION - gameState.timeLeft; // (elapsed already counted above, update)
+        send(ws, { type: 'correct_guess', points: finalPoints, basePoints: points, multiplier, totalScore: player.score, streak: player.stats.streak });
         broadcastExcept(playerId, { type: 'player_guessed', playerName: player.name, points });
         broadcastLeaderboard();
+        // Check if score limit reached
+        if (player.score >= gameState.scoreLimit) {
+          stopRoundTimer();
+          setTimeout(() => endGameEarly(player), 800);
+          return;
+        }
         if (checkAllGuessed()) { stopRoundTimer(); setTimeout(() => endRound(), 1000); }
       } else {
         player.wrongGuesses.push(raw);
         broadcast({ type: 'wrong_guess', playerName: player.name, playerId: player.id, guess: raw });
       }
+      return;
+    }
+
+    // ── EMOJI REACTION ────────────────────────────────────────────────────────
+    if (type === 'react') {
+      const VALID_REACTIONS = ['👏','😱','🤔','😂'];
+      if (!VALID_REACTIONS.includes(msg.emoji)) return;
+      const now = Date.now();
+      if (now - (player.lastReactAt || 0) < COOLDOWN_REACT) return;
+      player.lastReactAt = now;
+      broadcast({ type: 'reaction', playerName: player.name, playerId: player.id, emoji: msg.emoji });
       return;
     }
 

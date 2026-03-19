@@ -66,6 +66,14 @@
             <span class="cat-hint">możesz wybrać kilka</span>
           </div>
           <div id="category-chips" class="category-chips"></div>
+          <div class="score-limit-wrap">
+            <span class="field-label">Gra do punktów</span>
+            <div class="score-limit-chips" id="score-limit-chips">
+              <button class="score-chip selected" data-limit="100">100 pkt</button>
+              <button class="score-chip" data-limit="150">150 pkt</button>
+              <button class="score-chip" data-limit="200">200 pkt</button>
+            </div>
+          </div>
           <button id="start-btn" class="btn btn-primary btn-start">▶ Rozpocznij grę</button>
         </div>
 
@@ -73,6 +81,7 @@
         <div id="guest-controls" class="guest-section hidden">
           <p class="guest-hint">Poczekaj aż host rozpocznie grę…</p>
           <p class="guest-cats">Kategorie: <strong id="lobby-category-display">Wszystkie</strong></p>
+          <p class="guest-cats">Gra do: <strong id="guest-score-limit">100 pkt</strong></p>
         </div>
       </div>
 
@@ -113,7 +122,17 @@
         <button id="pause-btn" class="btn btn-ghost btn-pause hidden" type="button">⏸ Wstrzymaj</button>
         <span id="timer-display" class="timer-display">25</span>
       </div>
-      <div class="category-row"><span id="category-label" class="category-label"></span></div>
+      <div class="category-row">
+        <span id="category-label" class="category-label"></span>
+        <span id="score-limit-label" class="score-limit-label"></span>
+      </div>
+
+      <!-- Double-points banner -->
+      <div id="double-banner" class="double-banner hidden">
+        <span class="double-icon">⚡</span>
+        <span class="double-text">PODWÓJNE PUNKTY!</span>
+        <span class="double-icon">⚡</span>
+      </div>
 
       <!-- Streak badge (pojawia się nad pytaniem po >=2 z rzędu) -->
       <div id="streak-badge" class="streak-badge hidden">
@@ -135,6 +154,14 @@
           <img id="question-image" src="" alt="Pytanie" class="q-image" />
         </div>
         <p id="question-text" class="q-text"></p>
+      </div>
+
+      <!-- Emoji reakcje -->
+      <div class="react-bar" id="react-bar">
+        <button class="react-btn" data-emoji="👏">👏</button>
+        <button class="react-btn" data-emoji="😱">😱</button>
+        <button class="react-btn" data-emoji="🤔">🤔</button>
+        <button class="react-btn" data-emoji="😂">😂</button>
       </div>
 
       <!-- Status baner -->
@@ -195,6 +222,11 @@
     <button id="reconnect-cancel" class="btn btn-ghost">Wróć do logowania</button>
   </div>
 </div>
+
+<!-- Mute button — fixed corner, always visible -->
+<button id="mute-btn" class="mute-btn" title="Wycisz">
+  <span id="mute-icon">🔊</span>
+</button>
 
 <script src="/js/client.js"></script>
 </body>
