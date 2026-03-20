@@ -127,14 +127,13 @@
         <span id="score-limit-label" class="score-limit-label"></span>
       </div>
 
-      <!-- Double-points banner -->
-      <div id="double-banner" class="double-banner hidden">
-        <span class="double-icon">⚡</span>
-        <span class="double-text">PODWÓJNE PUNKTY!</span>
-        <span class="double-icon">⚡</span>
+      <!-- Persistent special-round bar (visible whole round, top of game-main) -->
+      <div id="special-bar" class="special-bar hidden">
+        <span id="special-bar-emoji" class="special-bar-emoji">⚡</span>
+        <span id="special-bar-text" class="special-bar-text">PODWÓJNE PUNKTY!</span>
       </div>
 
-      <!-- Streak badge (pojawia się nad pytaniem po >=2 z rzędu) -->
+      <!-- Streak badge (pojawia się obok karty gracza, bez obramowania) -->
       <div id="streak-badge" class="streak-badge hidden">
         <span id="streak-icon" class="streak-icon">🔥</span>
         <span id="streak-text" class="streak-text">3 z rzędu!</span>
@@ -191,6 +190,15 @@
       <p class="section-eyebrow">Wyniki</p>
       <div id="game-leaderboard" class="player-list"></div>
     </div>
+  <!-- Special round preview overlay -->
+  <div id="special-preview-overlay" class="special-preview-overlay hidden">
+    <div class="special-preview-inner">
+      <div id="sp-emoji"  class="sp-emoji">⚡</div>
+      <div id="sp-title"  class="sp-title">PODWÓJNE PUNKTY!</div>
+      <div id="sp-desc"   class="sp-desc">W tej rundzie wszystkie punkty są x2!</div>
+      <div id="sp-countdown" class="sp-countdown">4</div>
+    </div>
+  </div>
   </div>
 </div>
 
@@ -220,6 +228,16 @@
     <p class="reconnect-title">Ponowne łączenie…</p>
     <p class="reconnect-sub" id="reconnect-sub">Próba połączenia z serwerem</p>
     <button id="reconnect-cancel" class="btn btn-ghost">Wróć do logowania</button>
+  </div>
+</div>
+
+<!-- Steal-one choice modal -->
+<div id="steal-modal" class="steal-modal hidden">
+  <div class="steal-modal-inner">
+    <div class="steal-modal-icon">🎯</div>
+    <p class="steal-modal-title">Zgadłeś pierwszy!</p>
+    <p class="steal-modal-sub">Wybierz gracza, któremu zabierzesz <strong>5 pkt</strong>:</p>
+    <div id="steal-targets" class="steal-targets"></div>
   </div>
 </div>
 

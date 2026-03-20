@@ -721,3 +721,149 @@ input::placeholder { color: var(--text-3); }
   transform: scale(1.1);
 }
 .mute-btn:active { transform: scale(0.93); }
+
+/* ════════════════════════════════════════════════════════════
+   STREAK BADGE — inline next to player card, no border
+════════════════════════════════════════════════════════════ */
+.streak-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 6px;
+  background: transparent;
+  border: none;
+  margin-top: 4px;
+  animation: streak-pop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes streak-pop {
+  from { transform: scale(0.6) translateX(8px); opacity: 0; }
+  to   { transform: scale(1) translateX(0);      opacity: 1; }
+}
+.streak-icon { font-size: 16px; line-height: 1; }
+.streak-text {
+  font-family: var(--font-head); font-size: 13px; font-weight: 800;
+  color: var(--warning);
+}
+
+/* ════════════════════════════════════════════════════════════
+   PERSISTENT SPECIAL ROUND BAR (top of game-main, whole round)
+════════════════════════════════════════════════════════════ */
+.special-bar {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 7px 16px; border-radius: 8px;
+  font-family: var(--font-head); font-size: 14px; font-weight: 800;
+  letter-spacing: 0.04em;
+  animation: sbar-in 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes sbar-in {
+  from { opacity:0; transform: translateY(-6px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+.special-bar-emoji { font-size: 16px; }
+
+.special-bar--double {
+  background: rgba(243,156,18,0.14);
+  border: 1px solid rgba(243,156,18,0.4);
+  color: var(--warning);
+}
+.special-bar--steal-all {
+  background: rgba(255,107,107,0.12);
+  border: 1px solid rgba(255,107,107,0.35);
+  color: var(--accent3);
+}
+.special-bar--steal-one {
+  background: rgba(0,212,255,0.10);
+  border: 1px solid rgba(0,212,255,0.3);
+  color: var(--accent2);
+}
+
+/* ════════════════════════════════════════════════════════════
+   SPECIAL ROUND PREVIEW OVERLAY (full-screen, inside #screen-game)
+════════════════════════════════════════════════════════════ */
+.special-preview-overlay {
+  position: absolute; inset: 0;
+  background: rgba(6,9,26,0.88);
+  backdrop-filter: blur(12px);
+  z-index: 20;
+  display: flex; align-items: center; justify-content: center;
+  animation: sin 0.3s ease;
+}
+/* screen-game needs position:relative to anchor the overlay */
+#screen-game { position: relative; }
+
+.special-preview-inner {
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: 40px 32px;
+  max-width: 480px;
+}
+.sp-emoji {
+  font-size: 64px;
+  animation: sp-bounce 0.6s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes sp-bounce {
+  from { transform: scale(0.4); opacity:0; }
+  to   { transform: scale(1);   opacity:1; }
+}
+.sp-title {
+  font-family: var(--font-head); font-size: 28px; font-weight: 800;
+  color: #fff; letter-spacing: 0.02em;
+}
+.sp-desc {
+  font-size: 16px; color: var(--muted); line-height: 1.5; max-width: 340px;
+}
+.sp-countdown {
+  font-family: var(--font-head); font-size: 48px; font-weight: 800; line-height: 1;
+  color: var(--accent2); opacity: 0.7;
+  margin-top: 4px;
+}
+
+/* ════════════════════════════════════════════════════════════
+   STEAL MODAL
+════════════════════════════════════════════════════════════ */
+.steal-modal {
+  position: fixed; inset: 0;
+  background: rgba(6,9,26,0.82);
+  backdrop-filter: blur(10px);
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  animation: sin 0.2s ease;
+}
+.steal-modal-inner {
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  padding: 36px 28px;
+  max-width: 360px; width: 100%;
+}
+.steal-modal-icon { font-size: 48px; }
+.steal-modal-title {
+  font-family: var(--font-head); font-size: 22px; font-weight: 800; color: #fff;
+}
+.steal-modal-sub { font-size: 14px; color: var(--muted); }
+.steal-modal-sub strong { color: var(--accent3); }
+
+.steal-targets {
+  display: flex; flex-direction: column; gap: 8px; width: 100%;
+}
+.steal-target-btn {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.14s; width: 100%;
+  font-family: var(--font-mono);
+}
+.steal-target-btn:hover {
+  background: rgba(255,107,107,0.12);
+  border-color: rgba(255,107,107,0.4);
+  transform: translateX(3px);
+}
+.steal-target-info {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 1px;
+}
+.steal-target-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.steal-target-score { font-size: 12px; color: var(--muted); }
+
+/* warn type for status banner (steal notifications) */
+.status-banner.warn {
+  background: rgba(255,107,107,0.10);
+  border: 1px solid rgba(255,107,107,0.3);
+  color: var(--accent3);
+}

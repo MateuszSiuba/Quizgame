@@ -231,6 +231,7 @@ const state = {
   roomCode: null,
   myStreak: 0,
   muted: false,
+  currentSpecial: null,
   scoreLimit: 100,
   scoreLimitOptions: [100,150,200],
   isDoublePoints: false,
@@ -297,7 +298,16 @@ const reconnectSub         = $('reconnect-sub');
 const scoreLimitChips      = $('score-limit-chips');
 const scoreLimitLabel      = $('score-limit-label');
 const guestScoreLimit      = $('guest-score-limit');
-const doubleBanner         = $('double-banner');
+const specialBar           = $('special-bar');
+const specialBarEmoji      = $('special-bar-emoji');
+const specialBarText       = $('special-bar-text');
+const specialPreviewOverlay = $('special-preview-overlay');
+const spEmoji              = $('sp-emoji');
+const spTitle              = $('sp-title');
+const spDesc               = $('sp-desc');
+const spCountdown          = $('sp-countdown');
+const stealModal           = $('steal-modal');
+const stealTargets         = $('steal-targets');
 const reactBar             = $('react-bar');
 const reconnectCancel      = $('reconnect-cancel');
 const streakBadge          = $('streak-badge');
@@ -516,14 +526,12 @@ function handleMessage(msg) {
       break;
     }
 
-    case 'round_start': { startRound(msg); break; }
-
-    case 'double_points_round': {
-      state.isDoublePoints = true;
-      showDoubleBanner();
-      audio.doublePoints();
+    case 'special_round_preview': {
+      showSpecialPreview(msg);
       break;
     }
+
+    case 'round_start': { startRound(msg); break; }
     case 'timer_tick':  { updateTimer(msg.timeLeft); break; }
 
     case 'game_paused': {
@@ -548,7 +556,9 @@ function handleMessage(msg) {
       disableGuessInput('Już odpowiedziałeś/aś!');
       audio.correct();
       const bonusLabel = msg.multiplier > 1 ? ` ⚡x${msg.multiplier}` : '';
-      showBanner(`Zgadłeś!${bonusLabel} +${msg.points} pkt 🎉`, 'success');
+      if (!msg.stealChoiceNeeded) {
+        showBanner(`Zgadłeś!${bonusLabel} +${msg.points} pkt 🎉`, 'success');
+      }
       state.playerGuessed.set(state.playerId, true);
       // Confetti burst at guess input position
       const rect = guessInput.getBoundingClientRect();
@@ -606,6 +616,28 @@ function handleMessage(msg) {
       break;
     }
 
+    case 'steal_one_choose': {
+      // We won and need to pick a target
+      showStealModal(msg.targets);
+      break;
+    }
+
+    case 'steal_all_triggered': {
+      showBanner(`💀 ${msg.byName} kradnie wszystkim 3 pkt!`, 'warn');
+      break;
+    }
+
+    case 'steal_one_triggered': {
+      if (msg.byName === state.savedName) {
+        showBanner(`🎯 Ukradłeś ${msg.stolen} pkt od ${msg.targetName}!`, 'success');
+      } else if (msg.targetName === state.savedName) {
+        showBanner(`😱 ${msg.byName} ukradł Ci ${msg.stolen} pkt!`, 'warn');
+      } else {
+        showBanner(`🎯 ${msg.byName} ukradł ${msg.stolen} pkt od ${msg.targetName}`, 'info');
+      }
+      break;
+    }
+
     case 'player_disconnected': {
       state.playerDisconnected.add(msg.playerId);
       appendChat({ system: true, message: `${msg.playerName} stracił(a) połączenie…` });
@@ -616,16 +648,62 @@ function handleMessage(msg) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  DOUBLE POINTS BANNER
+//  SPECIAL ROUND BAR (persistent, top of game-main for whole round)
 // ══════════════════════════════════════════════════════════════════════════════
-function showDoubleBanner() {
-  if (!doubleBanner) return;
-  doubleBanner.classList.remove('hidden');
-  doubleBanner.style.animation = 'none';
-  void doubleBanner.offsetWidth;
-  doubleBanner.style.animation = '';
-  clearTimeout(doubleBanner._t);
-  doubleBanner._t = setTimeout(() => doubleBanner.classList.add('hidden'), 4000);
+const SPECIAL_META = {
+  double:    { emoji: '⚡', text: 'PODWÓJNE PUNKTY!',   cls: 'special-bar--double'   },
+  steal_all: { emoji: '💀', text: 'KRADNIJ WSZYSTKIM!', cls: 'special-bar--steal-all' },
+  steal_one: { emoji: '🎯', text: 'CELNY STRZAŁ!',      cls: 'special-bar--steal-one' },
+};
+
+function showSpecialBar(type) {
+  if (!specialBar) return;
+  const meta = SPECIAL_META[type];
+  if (!meta) { specialBar.classList.add('hidden'); return; }
+  specialBarEmoji.textContent = meta.emoji;
+  specialBarText.textContent  = meta.text;
+  specialBar.className = `special-bar ${meta.cls}`;
+  specialBar.classList.remove('hidden');
+  specialBar.style.animation = 'none';
+  void specialBar.offsetWidth;
+  specialBar.style.animation = '';
+}
+
+function hideSpecialBar() {
+  if (specialBar) specialBar.classList.add('hidden');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  SPECIAL ROUND PREVIEW OVERLAY
+// ══════════════════════════════════════════════════════════════════════════════
+let _spCountdownTimer = null;
+
+function showSpecialPreview(msg) {
+  if (!specialPreviewOverlay) return;
+  showScreen('game'); // ensure we're on game screen
+
+  spEmoji.textContent = msg.emoji  || '⚡';
+  spTitle.textContent = msg.title  || 'SPECJALNA RUNDA!';
+  spDesc.textContent  = msg.desc   || '';
+
+  const totalMs = msg.duration || 4000;
+  let countdown = Math.round(totalMs / 1000);
+  spCountdown.textContent = countdown;
+
+  specialPreviewOverlay.classList.remove('hidden');
+
+  if (_spCountdownTimer) clearInterval(_spCountdownTimer);
+  _spCountdownTimer = setInterval(() => {
+    countdown--;
+    spCountdown.textContent = Math.max(0, countdown);
+    if (countdown <= 0) {
+      clearInterval(_spCountdownTimer);
+      specialPreviewOverlay.classList.add('hidden');
+    }
+  }, 1000);
+
+  // Play double-points jingle only for double type
+  if (msg.specialType === 'double') audio.doublePoints();
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -633,23 +711,42 @@ function showDoubleBanner() {
 // ══════════════════════════════════════════════════════════════════════════════
 let streakHideTimer = null;
 
+const STREAK_THRESHOLDS = [3, 5, 7, 10];
+
 function showStreakBadge(streak) {
-  if (streak < 2) { streakBadge.classList.add('hidden'); return; }
+  // Only show at exact thresholds: 3, 5, 7, 10
+  if (!STREAK_THRESHOLDS.includes(streak)) {
+    streakBadge.classList.add('hidden');
+    return;
+  }
 
-  const icons  = ['','','🔥','🔥🔥','⚡','⚡⚡','💥','🌟','👑'];
-  const labels = ['','','2 z rzędu!','3 z rzędu!','4 z rzędu!','5 z rzędu!','SERIA x6!','SERIA x7!','MISTRZ! x8+'];
-  const i = Math.min(streak, icons.length - 1);
+  streakIcon.textContent = '🔥';
+  streakText.textContent = `${streak} z rzędu!`;
 
-  streakIcon.textContent = icons[i] || '🔥';
-  streakText.textContent = labels[i] || `SERIA x${streak}!`;
+  // Find my player card in leaderboard and inject badge next to it
+  placeStreakNextToCard();
+
   streakBadge.classList.remove('hidden');
-  // pop animation reset
   streakBadge.style.animation = 'none';
   void streakBadge.offsetWidth;
   streakBadge.style.animation = '';
 
   clearTimeout(streakHideTimer);
-  streakHideTimer = setTimeout(() => streakBadge.classList.add('hidden'), 3000);
+  streakHideTimer = setTimeout(() => streakBadge.classList.add('hidden'), 3200);
+}
+
+function placeStreakNextToCard() {
+  // Find my pl-item in gameLeaderboard
+  let myItem = null;
+  gameLeaderboard.querySelectorAll('.pl-item').forEach(item => {
+    if (item.classList.contains('me')) myItem = item;
+  });
+  if (!myItem) { document.querySelector('.game-sidebar')?.appendChild(streakBadge); return; }
+
+  // Position streak badge to the right of myItem, same height
+  const sidebar = gameLeaderboard.closest('.game-sidebar') || gameLeaderboard.parentElement;
+  // Move badge into sidebar, after the leaderboard list
+  sidebar.appendChild(streakBadge);
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -679,6 +776,33 @@ function showReaction(playerId, playerName, emoji) {
   el.style.top   = (rect.top - 10) + 'px';
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 1800);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  STEAL MODAL
+// ══════════════════════════════════════════════════════════════════════════════
+function showStealModal(targets) {
+  if (!stealModal || !stealTargets) return;
+  stealTargets.innerHTML = '';
+  targets.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'steal-target-btn';
+    const av = avatar.make(t.name, 32);
+    btn.appendChild(av);
+    const info = document.createElement('span');
+    info.className = 'steal-target-info';
+    info.innerHTML = `<span class="steal-target-name">${esc(t.name)}</span><span class="steal-target-score">${t.score} pkt</span>`;
+    btn.appendChild(info);
+    btn.addEventListener('click', () => {
+      wsSend({ type: 'steal_one_pick', targetId: t.id });
+      stealModal.classList.add('hidden');
+    });
+    stealTargets.appendChild(btn);
+  });
+  stealModal.classList.remove('hidden');
+  // Auto-close after 15s if no pick
+  clearTimeout(stealModal._t);
+  stealModal._t = setTimeout(() => stealModal.classList.add('hidden'), 15000);
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -874,9 +998,10 @@ function startRound(msg) {
 
   showScreen('game'); state.phase = 'playing';
   hideGameOverlay(); streakBadge.classList.add('hidden');
-  state.isDoublePoints = msg.isDoublePoints || false;
-  if (state.isDoublePoints) showDoubleBanner();
-  if (doubleBanner && !state.isDoublePoints) doubleBanner.classList.add('hidden');
+  state.currentSpecial = msg.specialType || null;
+  if (state.currentSpecial) showSpecialBar(state.currentSpecial);
+  else hideSpecialBar();
+  specialPreviewOverlay?.classList.add('hidden');
 
   roundLabel.textContent    = `Runda ${msg.roundNumber}`;
   categoryLabel.textContent = msg.category || '';
@@ -969,6 +1094,8 @@ function showReveal(answer, questionId, votes, countdownSec) {
 }
 
 function endRound(msg) {
+  hideSpecialBar();
+  stealModal?.classList.add('hidden');
   showReveal(msg.answer, msg.questionId, msg.votes, msg.nextRoundIn);
   updatePauseButton();
   if (msg.leaderboard) { msg.leaderboard.forEach(p => state.playerNames.set(p.id,p.name)); renderPlayerList(gameLeaderboard, msg.leaderboard, false); }

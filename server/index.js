@@ -70,8 +70,9 @@ const gameState = {
   roundNumber: 0,
   roomCode: ROOM_CODE,
   scoreLimit: 100,          // target score chosen by host
-  doublePointsRounds: new Set(), // set of roundNumbers that are 2x
-  isDoublePoints: false,
+  specialRounds: new Map(),      // roundNumber -> { type: 'double'|'steal_all'|'steal_one' }
+  currentSpecial: null,              // type of current round's special
+  stealWinner: null,                 // playerId who won steal_one, awaiting choice
 };
 
 // ── Timer helpers ─────────────────────────────────────────────────────────────
@@ -159,11 +160,36 @@ function buildQueue() {
 }
 
 // ── Round Management ──────────────────────────────────────────────────────────
+const SPECIAL_PREVIEW_DURATION = 4000; // ms to show special round info
+
+const SPECIAL_INFO = {
+  double:    { emoji: '⚡', title: 'PODWÓJNE PUNKTY!',         desc: 'W tej rundzie wszystkie punkty są x2!' },
+  steal_all: { emoji: '💀', title: 'KRADNIJ WSZYSTKIM!',       desc: 'Odgadnij pierwszy → zabierasz każdemu graczowi 3 pkt!' },
+  steal_one: { emoji: '🎯', title: 'CELNY STRZAŁ!',            desc: 'Odgadnij pierwszy → wybierz gracza i zabierz mu 5 pkt dla siebie!' },
+};
+
 function startNextRound() {
   if (gameState.questionQueue.length === 0) { endGame(); return; }
   gameState.players.forEach(p => { p.hasGuessed = false; p.wrongGuesses = []; });
   gameState.currentQuestion = gameState.questionQueue.shift();
   gameState.roundNumber += 1;
+  gameState.stealWinner = null;
+
+  const special = gameState.specialRounds.get(gameState.roundNumber) || null;
+  gameState.currentSpecial = special ? special.type : null;
+
+  // If special round: first broadcast preview (blur screen), then start after delay
+  if (special) {
+    const info = SPECIAL_INFO[special.type];
+    gameState.phase = 'special_preview';
+    broadcast({ type: 'special_round_preview', specialType: special.type, ...info, duration: SPECIAL_PREVIEW_DURATION });
+    setTimeout(() => actuallyStartRound(), SPECIAL_PREVIEW_DURATION);
+  } else {
+    actuallyStartRound();
+  }
+}
+
+function actuallyStartRound() {
   gameState.timeLeft = ROUND_DURATION;
   gameState.phase = 'playing';
   const q = gameState.currentQuestion;
@@ -176,12 +202,8 @@ function startNextRound() {
     timeLeft: ROUND_DURATION,
     category: q.category,
     questionId: q.id,
+    specialType: gameState.currentSpecial,
   });
-  const isDouble = gameState.doublePointsRounds.has(gameState.roundNumber);
-  gameState.isDoublePoints = isDouble;
-  if (isDouble) {
-    setTimeout(() => broadcast({ type: 'double_points_round', roundNumber: gameState.roundNumber }), 300);
-  }
   broadcastLeaderboard();
   startRoundTimer();
 }
@@ -237,7 +259,8 @@ function endGame() {
   gameState.phase = 'lobby';
   gameState.currentQuestion = null;
   gameState.questionQueue = [];
-  gameState.isDoublePoints = false;
+  gameState.currentSpecial = null;
+  gameState.stealWinner = null;
   const finishedRounds = gameState.roundNumber;
   gameState.roundNumber = 0;
   const statsPayload = [...gameState.players.values()].map(p => ({
@@ -435,18 +458,22 @@ wss.on('connection', (ws) => {
         p.score = 0;
         p.stats = { roundsGuessed: 0, totalAnswerTime: 0, streak: 0, bestStreak: 0 };
       });
-      // ── Schedule double-points rounds ───────────────────────────────────────
+      // ── Schedule special rounds ──────────────────────────────────────────────
       const totalRounds = gameState.questionQueue.length;
-      const dpCount = gameState.scoreLimit === 100 ? 2 : gameState.scoreLimit === 150 ? 3 : 4;
-      gameState.doublePointsRounds = new Set();
-      // Spread them evenly, avoid round 1
-      const step = Math.floor(totalRounds / (dpCount + 1));
-      for (let i = 1; i <= dpCount; i++) {
+      // Number of special rounds based on score limit
+      const specCount = gameState.scoreLimit === 100 ? 2 : gameState.scoreLimit === 150 ? 3 : 4;
+      gameState.specialRounds = new Map();
+      gameState.currentSpecial = null;
+      gameState.stealWinner = null;
+      const specialTypes = ['double', 'steal_all', 'steal_one'];
+      const step = Math.floor(totalRounds / (specCount + 1));
+      for (let i = 1; i <= specCount; i++) {
         let rn = step * i + Math.floor(Math.random() * Math.max(1, step / 2) - step / 4);
         rn = Math.max(2, Math.min(totalRounds, Math.round(rn)));
-        gameState.doublePointsRounds.add(rn);
+        // Rotate types
+        const t = specialTypes[(i - 1) % specialTypes.length];
+        gameState.specialRounds.set(rn, { type: t });
       }
-      gameState.isDoublePoints = false;
       broadcast({ type: 'game_starting', countdown: 3 });
       let cd = 3;
       const cdTimer = setInterval(() => {
@@ -533,6 +560,24 @@ wss.on('connection', (ws) => {
       if (now - (player.lastReactAt || 0) < COOLDOWN_REACT) return;
       player.lastReactAt = now;
       broadcast({ type: 'reaction', playerName: player.name, playerId: player.id, emoji: msg.emoji });
+      return;
+    }
+
+    // ── STEAL ONE PICK ────────────────────────────────────────────────────────
+    if (type === 'steal_one_pick') {
+      if (playerId !== gameState.stealWinner) return;
+      if (gameState.phase !== 'playing') return;
+      const targetId = msg.targetId;
+      const target = gameState.players.get(targetId);
+      if (!target || targetId === playerId) return;
+      const take = Math.min(5, Math.max(0, target.score));
+      target.score = Math.max(0, target.score - take);
+      player.score += take;
+      gameState.stealWinner = null;
+      broadcast({ type: 'steal_one_triggered', byName: player.name, targetName: target.name, stolen: take });
+      broadcastLeaderboard();
+      if (player.score >= gameState.scoreLimit) { stopRoundTimer(); setTimeout(() => endGameEarly(player), 800); return; }
+      if (checkAllGuessed()) { stopRoundTimer(); setTimeout(() => endRound(), 1000); }
       return;
     }
 
