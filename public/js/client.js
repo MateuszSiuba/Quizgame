@@ -737,18 +737,18 @@ function showStreakBadge(streak) {
 }
 
 function placeStreakNextToCard() {
-  // Find my pl-item in gameLeaderboard
+  // Find my pl-item's streak slot and put the badge in it
   let myItem = null;
   gameLeaderboard.querySelectorAll('.pl-item').forEach(item => {
     if (item.classList.contains('me')) myItem = item;
   });
   if (!myItem) return;
 
-  const mainRow = myItem.querySelector('.pl-main');
-  if (!mainRow) return;
+  const slot = myItem.querySelector('.pl-streak-slot');
+  if (!slot) return;
 
-  // Attach streak inline to the right side of own row.
-  mainRow.appendChild(streakBadge);
+  // Move the badge element into the slot
+  slot.appendChild(streakBadge);
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -911,18 +911,52 @@ function renderPlayerList(container, players, showGame) {
     const av = avatar.make(p.name, 28);
     const mainRow = document.createElement('div');
     mainRow.className = 'pl-main';
-    mainRow.innerHTML = `
-      <span class="pl-rank ${rc}">${rank}</span>
-      <span class="pl-name">${esc(p.name)}${guessed?'<span class="pl-ok">✓</span>':''}</span>
-      <span class="pl-score">${p.score} pkt</span>`;
-    mainRow.insertBefore(av, mainRow.children[1]);
+
+    // rank
+    const rankEl = document.createElement('span');
+    rankEl.className = `pl-rank ${rc}`;
+    rankEl.textContent = rank;
+    mainRow.appendChild(rankEl);
+
+    // avatar
+    mainRow.appendChild(av);
+
+    // name
+    const nameEl = document.createElement('span');
+    nameEl.className = 'pl-name';
+    nameEl.textContent = p.name;
+    if (guessed) {
+      const ok = document.createElement('span');
+      ok.className = 'pl-ok'; ok.textContent = '✓';
+      nameEl.appendChild(ok);
+    }
+    mainRow.appendChild(nameEl);
+
+    // streak badge slot — always present in pl-main, right of name, before score
+    // (only my card gets the actual badge injected by placeStreakNextToCard)
+    // We add a placeholder span with class pl-streak-slot so layout is stable
+    const streakSlot = document.createElement('span');
+    streakSlot.className = 'pl-streak-slot';
+    mainRow.appendChild(streakSlot);
+
+    // score
+    const scoreEl = document.createElement('span');
+    scoreEl.className = 'pl-score';
+    scoreEl.textContent = `${p.score} pkt`;
+    mainRow.appendChild(scoreEl);
+
     item.appendChild(mainRow);
 
+    // Wrong-guess row: ALWAYS rendered (fixed height), chip appears/disappears inside it
+    const wrow = document.createElement('div');
+    wrow.className = 'pl-wrongs';
     if (wrongs.length > 0) {
-      const row = document.createElement('div'); row.className = 'pl-wrongs';
-      wrongs.forEach(g => { const c=document.createElement('span'); c.className='pl-chip'; c.textContent=g; row.appendChild(c); });
-      item.appendChild(row);
+      const chip = document.createElement('span');
+      chip.className = 'pl-chip';
+      chip.textContent = wrongs[0]; // show only the latest
+      wrow.appendChild(chip);
     }
+    item.appendChild(wrow);
     container.appendChild(item);
   });
 }
@@ -935,12 +969,16 @@ function refreshSideWrongs() {
     if (!raw) return;
     const pid = getIdByName(raw);
     if (!pid) return;
-    const wrongs = state.playerWrongGuesses.get(pid)||[];
-    let wrow = item.querySelector('.pl-wrongs');
-    if (wrongs.length===0) { if(wrow) wrow.remove(); return; }
-    if (!wrow) { wrow=document.createElement('div'); wrow.className='pl-wrongs'; item.appendChild(wrow); }
-    wrow.innerHTML='';
-    wrongs.forEach(g => { const c=document.createElement('span'); c.className='pl-chip'; c.textContent=g; wrow.appendChild(c); });
+    const wrongs = state.playerWrongGuesses.get(pid) || [];
+    const wrow = item.querySelector('.pl-wrongs');
+    if (!wrow) return; // always rendered, should always exist
+    wrow.innerHTML = '';
+    if (wrongs.length > 0) {
+      const chip = document.createElement('span');
+      chip.className = 'pl-chip';
+      chip.textContent = wrongs[0]; // only latest guess
+      wrow.appendChild(chip);
+    }
   });
 }
 
@@ -1019,7 +1057,9 @@ function startRound(msg) {
     questionText.textContent = msg.questionText || '';
   }
 
-  statusBanner.classList.add('hidden');
+  // Clear banner (including persistent success from last round)
+  clearTimeout(statusBanner._t);
+  statusBanner.className = 'status-banner hidden';
   revealCard.classList.add('hidden');
   guessWrap.style.display = '';
   enableGuessInput(); guessInput.value = ''; guessInput.focus();
@@ -1064,7 +1104,8 @@ function updateTimer(t) {
 
 function showBanner(text, type, options = {}) {
   statusBanner.textContent = text;
-  statusBanner.className = `status-banner ${type}`;
+  // persist:true → add .persist class, no auto-hide timer
+  statusBanner.className = `status-banner ${type}${options.persist ? ' persist' : ''}`;
   statusBanner.classList.remove('hidden');
   clearTimeout(statusBanner._t);
   if (!options.persist) {

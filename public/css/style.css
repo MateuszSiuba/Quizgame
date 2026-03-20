@@ -287,21 +287,26 @@ input::placeholder { color: var(--text-3); }
 /* ════════════════════════════════════════════════════════════
    GAME SCREEN
 ════════════════════════════════════════════════════════════ */
-#screen-game { justify-content: flex-start; }
+#screen-game {
+  justify-content: flex-start;
+  /* Must have explicit height for flex children to fill it */
+  height: 100vh;
+}
 
 .game-layout {
   display: flex; gap: 52px;
   width: 100%; max-width: 1200px;
   margin: 0 auto; padding: 28px 28px;
-  height: 100%;
-  flex: 1; position: relative; z-index: 2;
+  flex: 1;
+  height: 0;              /* with flex:1 this makes it fill remaining space */
+  position: relative; z-index: 2;
 }
 .game-main {
   flex: 1; min-width: 0;
-  display: flex; flex-direction: column; gap: 22px;
-  min-height: 100%;
+  display: flex; flex-direction: column; gap: 16px;
+  height: 100%;           /* fill the game-layout height */
+  overflow: hidden;       /* clip anything that overflows */
   position: relative;
-  padding-bottom: 92px;
 }
 
 /* Timer */
@@ -338,8 +343,10 @@ input::placeholder { color: var(--text-3); }
 .question-area {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  flex: 1; gap: 20px; min-height: 220px; padding: 8px 0;
-  position: relative;                  /* anchor dla game-overlay */
+  flex: 1;                /* absorbs all spare height */
+  min-height: 0;          /* allows shrinking below content */
+  gap: 20px; padding: 8px 0;
+  position: relative;
 }
 .q-image-wrap {
   width: 100%; border-radius: 14px; overflow: hidden;
@@ -357,23 +364,35 @@ input::placeholder { color: var(--text-3); }
   border-radius: 10px; padding: 13px 20px;
   font-size: 15px; font-weight: 700; text-align: center;
   animation: sin 0.22s ease;
+  flex-shrink: 0;
 }
 .status-banner.success { background: rgba(61,214,140,0.1); border: 1px solid rgba(61,214,140,0.28); color: var(--success); }
+.status-banner.success.persist {
+  /* Stays visible until next round — subtle continuous glow */
+  box-shadow: 0 0 16px rgba(61,214,140,0.12);
+}
 .status-banner.info    { background: rgba(79,142,255,0.08); border: 1px solid rgba(79,142,255,0.22); color: var(--accent2); }
+.status-banner.warn    { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.25); color: var(--accent3); }
 @keyframes sin { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:none; } }
 
 /* Odpowiedź */
 .guess-row {
   display: flex;
   gap: 10px;
-  margin-top: 0;
+  margin-top: auto;     /* pushes to bottom of game-main flex column */
+  flex-shrink: 0;       /* never compress */
+  padding-top: 12px;
+  /* Subtle fade above the input */
+  position: relative;
+}
+/* Fade gradient sits behind the input row */
+.guess-row::before {
+  content: '';
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 6;
-  padding-top: 10px;
-  background: linear-gradient(to top, rgba(8,12,30,0.92), rgba(8,12,30,0));
+  left: 0; right: 0; bottom: 100%;
+  height: 48px;
+  background: linear-gradient(to top, rgba(8,12,30,0.85), transparent);
+  pointer-events: none;
 }
 .guess-input {
   flex: 1; background: var(--surface);
@@ -427,7 +446,12 @@ input::placeholder { color: var(--text-3); }
 }
 
 /* Game sidebar */
-.game-sidebar { width: 280px; flex-shrink: 0; position: relative; z-index: 2; }
+.game-sidebar {
+  width: 280px; flex-shrink: 0;
+  position: relative; z-index: 2;
+  height: 100%;           /* fill game-layout height */
+  display: flex; flex-direction: column;
+}
 
 /* ════════════════════════════════════════════════════════════
    GAME OVERLAY — pauza (over question-area)
@@ -462,11 +486,16 @@ input::placeholder { color: var(--text-3); }
 .player-list--wide { max-width: 440px; width: 100%; }
 
 .pl-item {
-  display: flex; flex-direction: column;
-  padding: 10px 14px; border-radius: 10px;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 14px;
+  border-radius: 10px;
   background: var(--surface);
   border: 1px solid transparent;
   transition: border-color 0.2s, background 0.2s;
+  height: 56px;          /* fixed — never changes */
+  overflow: hidden;       /* clips anything that might overflow */
+  position: relative;     /* anchor for wrong-guess overlay */
+  flex-shrink: 0;
 }
 .pl-item.me   { border-color: rgba(79,142,255,0.35); background: rgba(79,142,255,0.07); }
 .pl-item.top1 { border-color: rgba(255,215,0,0.22); }
@@ -475,7 +504,10 @@ input::placeholder { color: var(--text-3); }
   content: ' (offline)'; font-size: 12px; color: var(--accent3); font-weight: 400;
 }
 
-.pl-main { display: flex; align-items: center; gap: 10px; }
+.pl-main {
+  display: flex; align-items: center; gap: 10px;
+  height: 36px; flex-shrink: 0;
+}
 .pl-rank { font-size: 15px; color: var(--text-3); width: 26px; text-align: center; flex-shrink: 0; }
 .pl-rank.gold   { color: #ffd700; }
 .pl-rank.silver { color: #b0b8cc; }
@@ -487,15 +519,29 @@ input::placeholder { color: var(--text-3); }
 .pl-score { font-family: var(--font-head); font-size: 17px; font-weight: 800; color: var(--accent); flex-shrink: 0; }
 .pl-ok { color: var(--success); margin-left: 5px; font-size: 13px; }
 
-.pl-wrongs { display: flex; flex-wrap: wrap; gap: 4px; padding: 5px 0 0 36px; }
+/* Streak slot — always present in pl-main, reserves space so score never jumps */
+.pl-streak-slot {
+  display: flex; align-items: center;
+  min-width: 0; flex-shrink: 1;
+  /* slot is empty most of the time — badge gets injected here */
+}
+
+.pl-wrongs {
+  display: flex; align-items: center; gap: 4px;
+  padding: 0 0 0 68px;   /* align under the name (rank+avatar width) */
+  height: 16px;           /* fixed — same space whether empty or not */
+  overflow: hidden;
+  flex-shrink: 0;
+}
 .pl-chip {
   display: inline-block;
   background: rgba(255,107,107,0.08);
   border: 1px solid rgba(255,107,107,0.2);
-  border-radius: 5px; color: var(--accent3);
-  font-size: 12px; padding: 2px 8px;
-  max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  border-radius: 4px; color: var(--accent3);
+  font-size: 11px; padding: 1px 6px;
+  max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   animation: chipin 0.18s ease;
+  line-height: 14px;
 }
 @keyframes chipin { from { transform: scale(.75); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
@@ -676,7 +722,7 @@ input::placeholder { color: var(--text-3); }
 .react-bar {
   display: flex; align-items: center; gap: 6px;
   justify-content: flex-end;
-  margin-top: -8px;
+  flex-shrink: 0;
 }
 .react-btn {
   width: 38px; height: 38px; border-radius: 10px;
