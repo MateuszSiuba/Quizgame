@@ -75,14 +75,14 @@ input, button { font-family: inherit; }
 ════════════════════════════════════════════════════════════ */
 .section-eyebrow {
   font-size: 11px; font-weight: 800;
-  color: var(--text-2);
+  color: #b4b9c7;
   text-transform: uppercase; letter-spacing: 0.18em;
   margin-bottom: 14px;
 }
 .field-label {
   display: block;
   font-size: 12px; font-weight: 700;
-  color: var(--text-2);
+  color: #a0aac1;
   text-transform: uppercase; letter-spacing: 0.12em;
   margin-bottom: 10px;
 }
@@ -256,7 +256,7 @@ input::placeholder { color: var(--text-3); }
 .chat-messages::-webkit-scrollbar-thumb { background: var(--text-3); border-radius: 2px; }
 .chat-msg { font-size: 15px; color: var(--text-2); }
 .chat-msg .cn { color: var(--accent2); font-weight: 700; }
-.chat-msg.sys { color: var(--text-3); font-style: italic; font-size: 14px; }
+.chat-msg.sys { color: #7381a5; font-style: italic; font-size: 14px; }
 .chat-row { display: flex; gap: 8px; }
 .chat-row input { flex: 1; }
 
@@ -267,7 +267,7 @@ input::placeholder { color: var(--text-3); }
 ════════════════════════════════════════════════════════════ */
 .overlay {
   position: fixed; inset: 0;
-  background: rgba(8,12,30,0.88);
+  background: rgba(158, 174, 247, 0.88);
   backdrop-filter: blur(12px);
   z-index: 50;
   display: flex; align-items: center; justify-content: center;
@@ -293,17 +293,19 @@ input::placeholder { color: var(--text-3); }
   display: flex; gap: 52px;
   width: 100%; max-width: 1200px;
   margin: 0 auto; padding: 28px 28px;
+  height: 100%;
   flex: 1; position: relative; z-index: 2;
 }
 .game-main {
   flex: 1; min-width: 0;
   display: flex; flex-direction: column; gap: 22px;
+  min-height: 100%;
 }
 
 /* Timer */
 .timer-row { display: flex; align-items: center; gap: 16px; }
 .round-label {
-  font-size: 13px; font-weight: 800; color: var(--text-2);
+  font-size: 13px; font-weight: 800; color: #ffffff;
   text-transform: uppercase; letter-spacing: 0.16em;
   white-space: nowrap; flex-shrink: 0;
 }
@@ -359,7 +361,16 @@ input::placeholder { color: var(--text-3); }
 @keyframes sin { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:none; } }
 
 /* Odpowiedź */
-.guess-row { display: flex; gap: 10px; margin-top: auto; }
+.guess-row {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  z-index: 6;
+  padding-top: 10px;
+  background: linear-gradient(to top, rgba(8,12,30,0.92), rgba(8,12,30,0));
+}
 .guess-input {
   flex: 1; background: var(--surface);
   border: 1.5px solid var(--border); border-radius: 10px;
@@ -377,7 +388,7 @@ input::placeholder { color: var(--text-3); }
 }
 @keyframes rpop { from { transform: scale(.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .reveal-label {
-  font-size: 12px; font-weight: 800; color: var(--text-2);
+  font-size: 12px; font-weight: 800; color: #ffffff;
   text-transform: uppercase; letter-spacing: 0.16em;
 }
 .reveal-answer {
@@ -730,7 +741,8 @@ input::placeholder { color: var(--text-3); }
   padding: 4px 10px; border-radius: 6px;
   background: transparent;
   border: none;
-  margin-top: 4px;
+  margin-top: 0;
+  margin-left: 8px;
   animation: streak-pop 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
 @keyframes streak-pop {

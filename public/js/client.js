@@ -104,7 +104,7 @@ const avatar = (() => {
       display:inline-flex; align-items:center; justify-content:center;
       font-size:${Math.round(size * 0.38)}px; font-weight:800;
       color:#fff; flex-shrink:0; user-select:none;
-      font-family:var(--font-head); letter-spacing:0.02em;
+      letter-spacing:0.02em;
     `;
     el.textContent = initials(name);
     el.title = name;
@@ -557,7 +557,7 @@ function handleMessage(msg) {
       audio.correct();
       const bonusLabel = msg.multiplier > 1 ? ` ⚡x${msg.multiplier}` : '';
       if (!msg.stealChoiceNeeded) {
-        showBanner(`Zgadłeś!${bonusLabel} +${msg.points} pkt 🎉`, 'success');
+        showBanner(`Zgadłeś!${bonusLabel} +${msg.points} pkt 🎉`, 'success', { persist: true });
       }
       state.playerGuessed.set(state.playerId, true);
       // Confetti burst at guess input position
@@ -591,6 +591,7 @@ function handleMessage(msg) {
     case 'leaderboard': {
       msg.players.forEach(p => state.playerNames.set(p.id, p.name));
       renderPlayerList(gameLeaderboard, msg.players, true);
+      if (!streakBadge.classList.contains('hidden')) placeStreakNextToCard();
       break;
     }
 
@@ -741,12 +742,13 @@ function placeStreakNextToCard() {
   gameLeaderboard.querySelectorAll('.pl-item').forEach(item => {
     if (item.classList.contains('me')) myItem = item;
   });
-  if (!myItem) { document.querySelector('.game-sidebar')?.appendChild(streakBadge); return; }
+  if (!myItem) return;
 
-  // Position streak badge to the right of myItem, same height
-  const sidebar = gameLeaderboard.closest('.game-sidebar') || gameLeaderboard.parentElement;
-  // Move badge into sidebar, after the leaderboard list
-  sidebar.appendChild(streakBadge);
+  const mainRow = myItem.querySelector('.pl-main');
+  if (!mainRow) return;
+
+  // Attach streak inline to the right side of own row.
+  mainRow.appendChild(streakBadge);
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -1060,12 +1062,14 @@ function updateTimer(t) {
   }
 }
 
-function showBanner(text, type) {
+function showBanner(text, type, options = {}) {
   statusBanner.textContent = text;
   statusBanner.className = `status-banner ${type}`;
   statusBanner.classList.remove('hidden');
   clearTimeout(statusBanner._t);
-  statusBanner._t = setTimeout(() => statusBanner.classList.add('hidden'), 3200);
+  if (!options.persist) {
+    statusBanner._t = setTimeout(() => statusBanner.classList.add('hidden'), 3200);
+  }
 }
 function enableGuessInput()  { guessInput.disabled=false; guessBtn.disabled=false; guessInput.placeholder='Wpisz odpowiedź…'; }
 function disableGuessInput(ph) { guessInput.disabled=true; guessBtn.disabled=true; guessInput.placeholder=ph||'Już odpowiedziałeś/aś!'; }
