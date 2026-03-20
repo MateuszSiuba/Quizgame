@@ -482,7 +482,7 @@ input::placeholder { color: var(--text-3); }
 /* ════════════════════════════════════════════════════════════
    PLAYER LIST
 ════════════════════════════════════════════════════════════ */
-.player-list { display: flex; flex-direction: column; gap: 6px; }
+.player-list { display: flex; flex-direction: column; gap: 6px; width: 400px; }
 .player-list--wide { max-width: 440px; width: 100%; }
 
 /* Card: single-row, FIXED height — never jumps */
