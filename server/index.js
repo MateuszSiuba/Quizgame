@@ -126,6 +126,17 @@ function getLeaderboard() {
     .sort((a, b) => b.score - a.score)
     .map(p => ({ id: p.id, name: p.name, score: p.score }));
 }
+
+function getScoreLimitWinner() {
+  let winner = null;
+  for (const p of gameState.players.values()) {
+    if (p.score >= gameState.scoreLimit) {
+      if (!winner || p.score > winner.score) winner = p;
+    }
+  }
+  return winner;
+}
+
 function broadcastLeaderboard() {
   broadcast({ type: 'leaderboard', players: getLeaderboard() });
 }
@@ -169,6 +180,8 @@ const SPECIAL_INFO = {
 };
 
 function startNextRound() {
+  const winnerByScore = getScoreLimitWinner();
+  if (winnerByScore) { endGameEarly(winnerByScore); return; }
   if (gameState.questionQueue.length === 0) { endGame(); return; }
   gameState.players.forEach(p => { p.hasGuessed = false; p.wrongGuesses = []; });
   gameState.currentQuestion = gameState.questionQueue.shift();
@@ -230,6 +243,11 @@ function endRound() {
     nextRoundIn: REVEAL_DURATION,
   });
   gameState.revealTimer = setTimeout(() => {
+    const winnerByScore = getScoreLimitWinner();
+    if (winnerByScore) {
+      endGame();
+      return;
+    }
     gameState.questionQueue.length > 0 ? startNextRound() : endGame();
   }, REVEAL_DURATION * 1000);
 }
