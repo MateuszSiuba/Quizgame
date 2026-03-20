@@ -267,7 +267,7 @@ input::placeholder { color: var(--text-3); }
 ════════════════════════════════════════════════════════════ */
 .overlay {
   position: fixed; inset: 0;
-  background: rgba(158, 174, 247, 0.88);
+  background: rgba(8, 11, 30, 0.82);
   backdrop-filter: blur(12px);
   z-index: 50;
   display: flex; align-items: center; justify-content: center;
@@ -482,68 +482,93 @@ input::placeholder { color: var(--text-3); }
 /* ════════════════════════════════════════════════════════════
    PLAYER LIST
 ════════════════════════════════════════════════════════════ */
-.player-list { display: flex; flex-direction: column; gap: 5px; }
+.player-list { display: flex; flex-direction: column; gap: 6px; }
 .player-list--wide { max-width: 440px; width: 100%; }
 
+/* Card: single-row, FIXED height — never jumps */
 .pl-item {
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 0 14px;
+  height: 48px;              /* fixed forever */
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
   border-radius: 10px;
   background: var(--surface);
   border: 1px solid transparent;
   transition: border-color 0.2s, background 0.2s;
-  height: 56px;          /* fixed — never changes */
-  overflow: hidden;       /* clips anything that might overflow */
-  position: relative;     /* anchor for wrong-guess overlay */
-  flex-shrink: 0;
-}
-.pl-item.me   { border-color: rgba(79,142,255,0.35); background: rgba(79,142,255,0.07); }
-.pl-item.top1 { border-color: rgba(255,215,0,0.22); }
-.pl-item.disconnected { opacity: 0.4; }
-.pl-item.disconnected .pl-name::after {
-  content: ' (offline)'; font-size: 12px; color: var(--accent3); font-weight: 400;
-}
-
-.pl-main {
-  display: flex; align-items: center; gap: 10px;
-  height: 36px; flex-shrink: 0;
-}
-.pl-rank { font-size: 15px; color: var(--text-3); width: 26px; text-align: center; flex-shrink: 0; }
-.pl-rank.gold   { color: #ffd700; }
-.pl-rank.silver { color: #b0b8cc; }
-.pl-rank.bronze { color: #cd7f32; }
-.pl-name {
-  flex: 1; font-size: 16px; font-weight: 700; color: var(--text);
-  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.pl-score { font-family: var(--font-head); font-size: 17px; font-weight: 800; color: var(--accent); flex-shrink: 0; }
-.pl-ok { color: var(--success); margin-left: 5px; font-size: 13px; }
-
-/* Streak slot — always present in pl-main, reserves space so score never jumps */
-.pl-streak-slot {
-  display: flex; align-items: center;
-  min-width: 0; flex-shrink: 1;
-  /* slot is empty most of the time — badge gets injected here */
-}
-
-.pl-wrongs {
-  display: flex; align-items: center; gap: 4px;
-  padding: 0 0 0 68px;   /* align under the name (rank+avatar width) */
-  height: 16px;           /* fixed — same space whether empty or not */
   overflow: hidden;
   flex-shrink: 0;
 }
-.pl-chip {
-  display: inline-block;
-  background: rgba(255,107,107,0.08);
-  border: 1px solid rgba(255,107,107,0.2);
-  border-radius: 4px; color: var(--accent3);
-  font-size: 11px; padding: 1px 6px;
-  max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  animation: chipin 0.18s ease;
-  line-height: 14px;
+.pl-item.me   { border-color: rgba(79,142,255,0.35); background: rgba(79,142,255,0.08); }
+.pl-item.top1 { border-color: rgba(255,215,0,0.22); }
+.pl-item.disconnected { opacity: 0.4; }
+.pl-item.disconnected .pl-name::after {
+  content: ' (offline)'; font-size: 11px; color: var(--accent3); font-weight: 400;
 }
-@keyframes chipin { from { transform: scale(.75); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* Main row fills the card */
+.pl-main {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;           /* fill card width */
+  min-width: 0;
+  height: 100%;
+}
+.pl-rank {
+  font-size: 14px; color: var(--text-3);
+  width: 22px; text-align: center; flex-shrink: 0;
+}
+.pl-rank.gold   { color: #ffd700; }
+.pl-rank.silver { color: #b0b8cc; }
+.pl-rank.bronze { color: #cd7f32; }
+
+.pl-name {
+  flex: 1;
+  font-size: 15px; font-weight: 700; color: var(--text);
+  min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pl-ok { color: var(--success); margin-left: 4px; font-size: 12px; }
+
+/* Streak slot — fixed width reservation between name and score */
+.pl-streak-slot {
+  flex-shrink: 0;
+  display: flex; align-items: center;
+  /* When empty: zero width. Badge injected here has its own width. */
+}
+
+.pl-score {
+  font-family: var(--font-head); font-size: 15px; font-weight: 800;
+  color: var(--accent); flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Wrong chip: inline in the single row, between name and streak */
+.pl-wrongs {
+  display: flex;
+  align-items: center;
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.pl-chip {
+  display: inline-flex; align-items: center;
+  background: rgba(255,107,107,0.1);
+  border: 1px solid rgba(255,107,107,0.22);
+  border-radius: 4px;
+  color: var(--accent3);
+  font-size: 11px; line-height: 1;
+  padding: 2px 7px;
+  max-width: 120px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  animation: chipin 0.2s ease;
+  flex-shrink: 1;
+}
+@keyframes chipin {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: none; }
+}
 
 /* ════════════════════════════════════════════════════════════
    GAME OVER

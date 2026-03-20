@@ -205,6 +205,7 @@ function startNextRound() {
 function actuallyStartRound() {
   gameState.timeLeft = ROUND_DURATION;
   gameState.phase = 'playing';
+  gameState.isDoublePoints = (gameState.currentSpecial === 'double');
   const q = gameState.currentQuestion;
   broadcast({
     type: 'round_start',
@@ -483,6 +484,7 @@ wss.on('connection', (ws) => {
       gameState.specialRounds = new Map();
       gameState.currentSpecial = null;
       gameState.stealWinner = null;
+      gameState.isDoublePoints = false;
       const specialTypes = ['double', 'steal_all', 'steal_one'];
       const step = Math.floor(totalRounds / (specCount + 1));
       for (let i = 1; i <= specCount; i++) {

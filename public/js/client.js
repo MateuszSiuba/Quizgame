@@ -908,52 +908,46 @@ function renderPlayerList(container, players, showGame) {
     const guessed = showGame && state.playerGuessed.get(p.id);
     const wrongs  = showGame ? (state.playerWrongGuesses.get(p.id)||[]) : [];
 
-    const av = avatar.make(p.name, 28);
+    // ── Row 1: rank · avatar · name · streak-slot · score ──────────────────
+    const av = avatar.make(p.name, 26);
     const mainRow = document.createElement('div');
     mainRow.className = 'pl-main';
 
-    // rank
     const rankEl = document.createElement('span');
     rankEl.className = `pl-rank ${rc}`;
     rankEl.textContent = rank;
-    mainRow.appendChild(rankEl);
 
-    // avatar
-    mainRow.appendChild(av);
-
-    // name
     const nameEl = document.createElement('span');
     nameEl.className = 'pl-name';
     nameEl.textContent = p.name;
     if (guessed) {
       const ok = document.createElement('span');
-      ok.className = 'pl-ok'; ok.textContent = '✓';
+      ok.className = 'pl-ok'; ok.textContent = ' ✓';
       nameEl.appendChild(ok);
     }
-    mainRow.appendChild(nameEl);
 
-    // streak badge slot — always present in pl-main, right of name, before score
-    // (only my card gets the actual badge injected by placeStreakNextToCard)
-    // We add a placeholder span with class pl-streak-slot so layout is stable
+    // Streak slot — always present, badge injected here for own card
     const streakSlot = document.createElement('span');
     streakSlot.className = 'pl-streak-slot';
-    mainRow.appendChild(streakSlot);
 
-    // score
     const scoreEl = document.createElement('span');
     scoreEl.className = 'pl-score';
     scoreEl.textContent = `${p.score} pkt`;
-    mainRow.appendChild(scoreEl);
 
+    mainRow.appendChild(rankEl);
+    mainRow.appendChild(av);
+    mainRow.appendChild(nameEl);
+    mainRow.appendChild(streakSlot);
+    mainRow.appendChild(scoreEl);
     item.appendChild(mainRow);
 
-    // Wrong-guess row: ALWAYS rendered (fixed height), chip appears/disappears inside it
+    // ── Row 2: wrong guess — ALWAYS rendered, fixed height ────────────────
     const wrow = document.createElement('div');
     wrow.className = 'pl-wrongs';
     if (wrongs.length > 0) {
       const chip = document.createElement('span');
       chip.className = 'pl-chip';
-      chip.textContent = wrongs[0]; // show only the latest
+      chip.textContent = wrongs[0];
       wrow.appendChild(chip);
     }
     item.appendChild(wrow);
@@ -971,12 +965,12 @@ function refreshSideWrongs() {
     if (!pid) return;
     const wrongs = state.playerWrongGuesses.get(pid) || [];
     const wrow = item.querySelector('.pl-wrongs');
-    if (!wrow) return; // always rendered, should always exist
+    if (!wrow) return;
     wrow.innerHTML = '';
     if (wrongs.length > 0) {
       const chip = document.createElement('span');
       chip.className = 'pl-chip';
-      chip.textContent = wrongs[0]; // only latest guess
+      chip.textContent = wrongs[0];
       wrow.appendChild(chip);
     }
   });
