@@ -519,8 +519,9 @@ wss.on('connection', (ws) => {
       gameState.currentSpecial = null;
       gameState.stealWinner = null;
       gameState.isDoublePoints = false;
-      // All 5 types, shuffled each game
-      const allSpecialTypes = ['double', 'steal_all', 'steal_one', 'bomb', 'swap'];
+      // All enabled special types, shuffled each game.
+      // 'swap' is temporarily disabled (left as a comment for easy restore).
+      const allSpecialTypes = ['double', 'steal_all', 'steal_one', 'bomb'/*, 'swap'*/];
       // Fisher-Yates shuffle
       for (let i = allSpecialTypes.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
