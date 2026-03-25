@@ -1132,7 +1132,7 @@ function showReveal(answer, questionId, votes, countdownSec) {
   disableGuessInput('Runda zakończona!');
   guessWrap.style.display = 'none';
   hideGameOverlay();
-  revealAnswer.textContent = answer || 'Odpowiedź ukryta';
+  revealAnswer.textContent = answer;
   revealCard.classList.remove('hidden');
   state.hasVoted = false;
   state.currentQuestionId = questionId;
