@@ -271,7 +271,7 @@ function endRound() {
   const q = gameState.currentQuestion;
   broadcast({
     type: 'round_end',
-    answer: q.answers[0],
+    answer: null,
     questionId: q.id,
     votes: q.votes,
     leaderboard: getLeaderboard(),
@@ -305,7 +305,7 @@ function endGameEarly(winner) {
   if (gameState.revealTimer) { clearTimeout(gameState.revealTimer); gameState.revealTimer = null; }
   // Brief reveal of current answer then game_over
   const q = gameState.currentQuestion;
-  broadcast({ type: 'round_end', answer: q.answers[0], questionId: q.id, votes: q.votes, leaderboard: getLeaderboard(), nextRoundIn: 3 });
+  broadcast({ type: 'round_end', answer: null, questionId: q.id, votes: q.votes, leaderboard: getLeaderboard(), nextRoundIn: 3 });
   setTimeout(() => endGame(), 3000);
 }
 
@@ -368,7 +368,7 @@ function buildReconnectPayload(playerId) {
     };
   }
   if (gameState.phase === 'reveal' && gameState.currentQuestion) {
-    payload.revealAnswer    = gameState.currentQuestion.answers[0];
+    payload.revealAnswer    = null;
     payload.revealQuestionId = gameState.currentQuestion.id;
     payload.revealVotes     = gameState.currentQuestion.votes;
   }
