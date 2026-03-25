@@ -174,9 +174,11 @@ function buildQueue() {
 const SPECIAL_PREVIEW_DURATION = 4000; // ms to show special round info
 
 const SPECIAL_INFO = {
-  double:    { emoji: '⚡', title: 'PODWÓJNE PUNKTY!',         desc: 'W tej rundzie wszystkie punkty są x2!' },
-  steal_all: { emoji: '💀', title: 'KRADNIJ WSZYSTKIM!',       desc: 'Odgadnij pierwszy → zabierasz każdemu graczowi 3 pkt!' },
-  steal_one: { emoji: '🎯', title: 'CELNY STRZAŁ!',            desc: 'Odgadnij pierwszy → wybierz gracza i zabierz mu 5 pkt dla siebie!' },
+  double:    { emoji: '⚡', title: 'PODWÓJNE PUNKTY!',   desc: 'W tej rundzie wszystkie punkty są x2!' },
+  steal_all: { emoji: '💀', title: 'KRADNIJ WSZYSTKIM!', desc: 'Odgadnij pierwszy → zabierasz każdemu graczowi 3 pkt!' },
+  steal_one: { emoji: '🎯', title: 'CELNY STRZAŁ!',      desc: 'Odgadnij pierwszy → wybierz gracza i zabierz mu 5 pkt dla siebie!' },
+  bomb:      { emoji: '💣', title: 'BOMBA!',             desc: 'Kto nie zgadnie w tej rundzie, traci 3 pkt!' },
+  swap:      { emoji: '🔀', title: 'ZAMIANA!',           desc: 'Po rundzie lider i ostatni gracz zamieniają się punktami!' },
 };
 
 function startNextRound() {
@@ -230,10 +232,42 @@ function checkAllGuessed() {
 function endRound() {
   stopRoundTimer();
   gameState.phase = 'reveal';
-  // Break streak for players who didn't guess this round
+
+  // ── Streak: break for players who didn't guess ───────────────────────────
   gameState.players.forEach(p => {
     if (!p.hasGuessed) p.stats.streak = 0;
   });
+
+  // ── Special end-of-round effects ──────────────────────────────────────────
+  let specialEffect = null;
+
+  if (gameState.currentSpecial === 'bomb') {
+    // Every player who didn't guess loses 3 pts
+    const losers = [];
+    gameState.players.forEach(p => {
+      if (!p.hasGuessed) {
+        const lose = Math.min(3, p.score);
+        p.score = Math.max(0, p.score - lose);
+        if (lose > 0) losers.push(p.name);
+      }
+    });
+    specialEffect = { type: 'bomb_triggered', losers };
+    if (losers.length) broadcast({ type: 'bomb_triggered', losers });
+  }
+
+  if (gameState.currentSpecial === 'swap') {
+    // Swap scores of leader and last player (min 2 players, only if score diff > 0)
+    const sorted = [...gameState.players.values()].sort((a, b) => b.score - a.score);
+    if (sorted.length >= 2) {
+      const leader = sorted[0];
+      const last   = sorted[sorted.length - 1];
+      if (leader.score !== last.score) {
+        [leader.score, last.score] = [last.score, leader.score];
+        broadcast({ type: 'swap_triggered', leaderName: leader.name, lastName: last.name });
+      }
+    }
+  }
+
   const q = gameState.currentQuestion;
   broadcast({
     type: 'round_end',
@@ -242,6 +276,7 @@ function endRound() {
     votes: q.votes,
     leaderboard: getLeaderboard(),
     nextRoundIn: REVEAL_DURATION,
+    specialEffect,
   });
   gameState.revealTimer = setTimeout(() => {
     const winnerByScore = getScoreLimitWinner();
@@ -479,20 +514,24 @@ wss.on('connection', (ws) => {
       });
       // ── Schedule special rounds ──────────────────────────────────────────────
       const totalRounds = gameState.questionQueue.length;
-      // Number of special rounds based on score limit
       const specCount = gameState.scoreLimit === 100 ? 2 : gameState.scoreLimit === 150 ? 3 : 4;
       gameState.specialRounds = new Map();
       gameState.currentSpecial = null;
       gameState.stealWinner = null;
       gameState.isDoublePoints = false;
-      const specialTypes = ['double', 'steal_all', 'steal_one'];
-      const step = Math.floor(totalRounds / (specCount + 1));
-      for (let i = 1; i <= specCount; i++) {
-        let rn = step * i + Math.floor(Math.random() * Math.max(1, step / 2) - step / 4);
-        rn = Math.max(2, Math.min(totalRounds, Math.round(rn)));
-        // Rotate types
-        const t = specialTypes[(i - 1) % specialTypes.length];
-        gameState.specialRounds.set(rn, { type: t });
+      // All 5 types, shuffled each game
+      const allSpecialTypes = ['double', 'steal_all', 'steal_one', 'bomb', 'swap'];
+      // Fisher-Yates shuffle
+      for (let i = allSpecialTypes.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [allSpecialTypes[i], allSpecialTypes[j]] = [allSpecialTypes[j], allSpecialTypes[i]];
+      }
+      // Place specials at round gaps of 4-7 (random), never before round 3
+      let nextRn = 3 + Math.floor(Math.random() * 3); // first special: round 3-5
+      for (let i = 0; i < specCount; i++) {
+        const rn = Math.min(nextRn, totalRounds - 1);
+        gameState.specialRounds.set(rn, { type: allSpecialTypes[i % allSpecialTypes.length] });
+        nextRn = rn + 4 + Math.floor(Math.random() * 4); // next: +4 to +7 rounds
       }
       broadcast({ type: 'game_starting', countdown: 3 });
       let cd = 3;
@@ -555,8 +594,34 @@ wss.on('connection', (ws) => {
         if (player.stats.streak > player.stats.bestStreak)
           player.stats.bestStreak = player.stats.streak;
         player.stats.totalAnswerTime += ROUND_DURATION - gameState.timeLeft; // (elapsed already counted above, update)
-        send(ws, { type: 'correct_guess', points: finalPoints, basePoints: points, multiplier, totalScore: player.score, streak: player.stats.streak });
-        broadcastExcept(playerId, { type: 'player_guessed', playerName: player.name, points });
+        // ── Special round first-guesser effects ─────────────────────────────
+        const isFirstCorrect = [...gameState.players.values()].filter(p => p.hasGuessed).length === 1;
+        let stealChoiceNeeded = false;
+
+        if (isFirstCorrect && gameState.currentSpecial) {
+          if (gameState.currentSpecial === 'steal_all') {
+            let stolen = 0;
+            gameState.players.forEach(other => {
+              if (other.id !== playerId) {
+                const take = Math.min(3, Math.max(0, other.score));
+                other.score = Math.max(0, other.score - take);
+                stolen += take;
+              }
+            });
+            player.score += stolen;
+            broadcast({ type: 'steal_all_triggered', byName: player.name, stolen });
+          } else if (gameState.currentSpecial === 'steal_one') {
+            gameState.stealWinner = playerId;
+            stealChoiceNeeded = true;
+            const targets = [...gameState.players.values()]
+              .filter(p => p.id !== playerId)
+              .map(p => ({ id: p.id, name: p.name, score: p.score }));
+            send(ws, { type: 'steal_one_choose', targets });
+          }
+        }
+
+        send(ws, { type: 'correct_guess', points: finalPoints, basePoints: points, multiplier, totalScore: player.score, streak: player.stats.streak, stealChoiceNeeded });
+        broadcastExcept(playerId, { type: 'player_guessed', playerName: player.name, points: finalPoints });
         broadcastLeaderboard();
         // Check if score limit reached
         if (player.score >= gameState.scoreLimit) {
@@ -564,7 +629,7 @@ wss.on('connection', (ws) => {
           setTimeout(() => endGameEarly(player), 800);
           return;
         }
-        if (checkAllGuessed()) { stopRoundTimer(); setTimeout(() => endRound(), 1000); }
+        if (!stealChoiceNeeded && checkAllGuessed()) { stopRoundTimer(); setTimeout(() => endRound(), 1000); }
       } else {
         player.wrongGuesses.push(raw);
         broadcast({ type: 'wrong_guess', playerName: player.name, playerId: player.id, guess: raw });

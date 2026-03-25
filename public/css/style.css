@@ -861,6 +861,16 @@ input::placeholder { color: var(--text-3); }
   border: 1px solid rgba(0,212,255,0.3);
   color: var(--accent2);
 }
+.special-bar--bomb {
+  background: rgba(255,165,0,0.14);
+  border: 1px solid rgba(255,165,0,0.45);
+  color: #ffa500;
+}
+.special-bar--swap {
+  background: rgba(180,100,255,0.13);
+  border: 1px solid rgba(180,100,255,0.4);
+  color: #c87dff;
+}
 
 /* ════════════════════════════════════════════════════════════
    SPECIAL ROUND PREVIEW OVERLAY (full-screen, inside #screen-game)

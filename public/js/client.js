@@ -628,6 +628,22 @@ function handleMessage(msg) {
       break;
     }
 
+    case 'bomb_triggered': {
+      const losers = msg.losers || [];
+      if (losers.length === 0) {
+        showBanner('💣 Bomba! Wszyscy zgadli — nikt nie traci pkt!', 'info');
+      } else {
+        const names = losers.join(', ');
+        showBanner(`💣 Bomba! ${names} ${losers.length === 1 ? 'traci' : 'tracą'} 3 pkt!`, 'warn');
+      }
+      break;
+    }
+
+    case 'swap_triggered': {
+      showBanner(`🔀 Zamiana! ${msg.leaderName} ↔ ${msg.lastName} — wyniki zamienione!`, 'warn');
+      break;
+    }
+
     case 'steal_one_triggered': {
       if (msg.byName === state.savedName) {
         showBanner(`🎯 Ukradłeś ${msg.stolen} pkt od ${msg.targetName}!`, 'success');
@@ -655,6 +671,8 @@ const SPECIAL_META = {
   double:    { emoji: '⚡', text: 'PODWÓJNE PUNKTY!',   cls: 'special-bar--double'   },
   steal_all: { emoji: '💀', text: 'KRADNIJ WSZYSTKIM!', cls: 'special-bar--steal-all' },
   steal_one: { emoji: '🎯', text: 'CELNY STRZAŁ!',      cls: 'special-bar--steal-one' },
+  bomb:      { emoji: '💣', text: 'BOMBA!',             cls: 'special-bar--bomb'      },
+  swap:      { emoji: '🔀', text: 'ZAMIANA!',           cls: 'special-bar--swap'      },
 };
 
 function showSpecialBar(type) {
