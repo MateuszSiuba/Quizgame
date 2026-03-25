@@ -1,386 +1,143 @@
 [
-  {
-    "id": 1,
-    "category": "Filmy",
-    "type": "image",
-    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/4/4e/Titanic_%281997_film%29_poster.jpg/220px-Titanic_%281997_film%29_poster.jpg",
-    "question_text": "Jaki to film?",
-    "answers": ["titanic"]
-  },
-  {
-    "id": 2,
-    "category": "Filmy",
-    "type": "image",
-    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/8/8a/Avengers_Infinity_War_poster.jpg/220px-Avengers_Infinity_War_poster.jpg",
-    "question_text": "Jaki to film?",
-    "answers": ["avengers infinity war", "avengers", "avengers: infinity war"]
-  },
-  {
-    "id": 3,
-    "category": "Filmy",
-    "type": "image",
-    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/1/1e/The_Lion_King_poster.jpg/220px-The_Lion_King_poster.jpg",
-    "question_text": "Jaki to film?",
-    "answers": ["the lion king", "lion king", "krol lew"]
-  },
-  {
-    "id": 4,
-    "category": "Filmy",
-    "type": "text",
-    "image_url": null,
-    "question_text": "W jakim roku premierę miał film 'Interstellar'?",
-    "answers": ["2014"]
-  },
-  {
-    "id": 5,
-    "category": "Filmy",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Kto wyreżyserował trylogię 'Władca Pierścieni'?",
-    "answers": ["peter jackson", "piotr jackson"]
-  },
-  {
-    "id": 6,
-    "category": "Filmy",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jak nazywa się główny bohater serii 'Indiana Jones'?",
-    "answers": ["indiana jones", "indiana", "indy"]
-  },
-  {
-    "id": 7,
-    "category": "Muzyka",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Który artysta nagrał album 'Thriller'?",
-    "answers": ["michael jackson", "mj"]
-  },
-  {
-    "id": 8,
-    "category": "Muzyka",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Z jakiego kraju pochodzi zespół ABBA?",
-    "answers": ["szwecja", "sweden"]
-  },
-  {
-    "id": 9,
-    "category": "Muzyka",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jak nazywa się wokalistka grupy Evanescence?",
-    "answers": ["amy lee"]
-  },
-  {
-    "id": 10,
-    "category": "Muzyka",
-    "type": "text",
-    "image_url": null,
-    "question_text": "W jakim roku powstała piosenka 'Bohemian Rhapsody' zespołu Queen?",
-    "answers": ["1975"]
-  },
-  {
-    "id": 11,
-    "category": "Muzyka",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jak ma na imię piosenkarka, która nagrała 'Rolling in the Deep'?",
-    "answers": ["adele"]
-  },
-  {
-    "id": 12,
-    "category": "Muzyka",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Który zespół nagrał album 'Dark Side of the Moon'?",
-    "answers": ["pink floyd"]
-  },
-  {
-    "id": 13,
-    "category": "Gry",
-    "type": "image",
-    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/0/0d/Minecraft_logo.png/200px-Minecraft_logo.png",
-    "question_text": "Jaka to gra?",
-    "answers": ["minecraft"]
-  },
-  {
-    "id": 14,
-    "category": "Gry",
-    "type": "text",
-    "image_url": null,
-    "question_text": "W jakiej grze sterujemy Geraltem z Rivii?",
-    "answers": ["wiedźmin", "wiedzmin", "the witcher", "witcher"]
-  },
-  {
-    "id": 15,
-    "category": "Gry",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jak nazywa się główna postać w serii 'The Legend of Zelda'?",
-    "answers": ["link"]
-  },
-  {
-    "id": 16,
-    "category": "Gry",
-    "type": "text",
-    "image_url": null,
-    "question_text": "W jakiej grze walczymy przeciwko Thanosowi w planszówkowej adaptacji?",
-    "answers": ["marvel", "avengers"]
-  },
-  {
-    "id": 17,
-    "category": "Gry",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Ile graczy może zmieścić się w jednej rozgrywce Battle Royale w Fortnite?",
-    "answers": ["100"]
-  },
-  {
-    "id": 18,
-    "category": "Gry",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jaka firma stworzyła grę 'Cyberpunk 2077'?",
-    "answers": ["cd projekt", "cd projekt red", "cdpr"]
-  },
-  {
-    "id": 19,
-    "category": "Polska",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jakie jest największe miasto w Polsce?",
-    "answers": ["warszawa", "warsaw"]
-  },
-  {
-    "id": 20,
-    "category": "Polska",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Ile województw liczy Polska?",
-    "answers": ["16", "szesnaście", "szesnascie"]
-  },
-  {
-    "id": 21,
-    "category": "Polska",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jak nazywa się najwyższy szczyt w Polsce?",
-    "answers": ["rysy"]
-  },
-  {
-    "id": 22,
-    "category": "Polska",
-    "type": "text",
-    "image_url": null,
-    "question_text": "W jakim roku Polska przystąpiła do Unii Europejskiej?",
-    "answers": ["2004"]
-  },
-  {
-    "id": 23,
-    "category": "Polska",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jak nazywa się polska waluta?",
-    "answers": ["zloty", "złoty", "pln"]
-  },
-  {
-    "id": 24,
-    "category": "Polska",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Kto był pierwszym prezydentem RP po 1989 roku?",
-    "answers": ["lech walesa", "walesa", "wałęsa", "lech wałęsa"]
-  },
-  {
-    "id": 25,
-    "category": "Nauka",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jaki jest symbol chemiczny złota?",
-    "answers": ["au"]
-  },
-  {
-    "id": 26,
-    "category": "Nauka",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Ile wynosi przybliżona wartość liczby Pi (2 miejsca po przecinku)?",
-    "answers": ["3.14", "3,14"]
-  },
-  {
-    "id": 27,
-    "category": "Nauka",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Kto odkrył penicylinę?",
-    "answers": ["alexander fleming", "fleming"]
-  },
-  {
-    "id": 28,
-    "category": "Nauka",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Ile kości ma dorosły człowiek?",
-    "answers": ["206"]
-  },
-  {
-    "id": 29,
-    "category": "Nauka",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jaka jest prędkość światła (w km/s, w przybliżeniu)?",
-    "answers": ["300000", "299792"]
-  },
-  {
-    "id": 30,
-    "category": "Nauka",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Kto napisał teorię względności?",
-    "answers": ["albert einstein", "einstein"]
-  },
-  {
-    "id": 31,
-    "category": "Sport",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Ile graczy gra w drużynie piłki nożnej (w tym bramkarz)?",
-    "answers": ["11", "jedenaście", "jedenascie"]
-  },
-  {
-    "id": 32,
-    "category": "Sport",
-    "type": "text",
-    "image_url": null,
-    "question_text": "W jakim kraju odbyły się Letnie Igrzyska Olimpijskie 2024?",
-    "answers": ["francja", "france"]
-  },
-  {
-    "id": 33,
-    "category": "Sport",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jak nazywa się siatkarka, która jest ikoną polskiej siatkówki kobiecej?",
-    "answers": ["malwina smarzek", "smarzek"]
-  },
-  {
-    "id": 34,
-    "category": "Sport",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Ile setów liczy mecz tenisa w Wielkim Szlemie (dla mężczyzn)?",
-    "answers": ["5", "piec", "pięć"]
-  },
-  {
-    "id": 35,
-    "category": "Sport",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Kto jest rekordzistą świata w biegu na 100 metrów?",
-    "answers": ["usain bolt", "bolt"]
-  },
-  {
-    "id": 36,
-    "category": "Sport",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jakie miasto gości klub piłkarski Real Madrid?",
-    "answers": ["madryt", "madrid"]
-  },
-  {
-    "id": 37,
-    "category": "Seriale",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jaki serial rozgrywa się w fikcyjnym Westeros?",
-    "answers": ["gra o tron", "game of thrones"]
-  },
-  {
-    "id": 38,
-    "category": "Seriale",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jak nazywa się chemik, który gotuje metamfetaminę w serialu AMC?",
-    "answers": ["walter white", "heisenberg", "walter"]
-  },
-  {
-    "id": 39,
-    "category": "Seriale",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Ile sezonów liczy serial 'Przyjaciele' (Friends)?",
-    "answers": ["10", "dziesiec", "dziesięć"]
-  },
-  {
-    "id": 40,
-    "category": "Seriale",
-    "type": "text",
-    "image_url": null,
-    "question_text": "W jakim mieście rozgrywa się akcja serialu 'Stranger Things'?",
-    "answers": ["hawkins"]
-  },
-  {
-    "id": 41,
-    "category": "Seriale",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jak nazywa się żółty kucharz z serialu animowanego SpongeBob?",
-    "answers": ["spongebob", "sponge bob", "gąbka bob", "gabka bob"]
-  },
-  {
-    "id": 42,
-    "category": "Seriale",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Który serwis streamingowy wyprodukował serial 'The Crown'?",
-    "answers": ["netflix"]
-  },
-  {
-    "id": 43,
-    "category": "Gotowanie",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Z jakiego kraju pochodzi pizza Margherita?",
-    "answers": ["wlochy", "włochy", "italy", "italia"]
-  },
-  {
-    "id": 44,
-    "category": "Gotowanie",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jaki składnik nadaje chlebowi żółty kolor w kurkumowym przepisie?",
-    "answers": ["kurkuma", "turmeric"]
-  },
-  {
-    "id": 45,
-    "category": "Gotowanie",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jak nazywa się japońska potrawa z surowej ryby?",
-    "answers": ["sushi", "sashimi"]
-  },
-  {
-    "id": 46,
-    "category": "Gotowanie",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jaka polska zupa jest gotowana z buraków?",
-    "answers": ["barszcz"]
-  },
-  {
-    "id": 47,
-    "category": "Gotowanie",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Z czego robi się tradycyjne włoskie risotto?",
-    "answers": ["ryż", "ryz", "rice"]
-  },
-  {
-    "id": 48,
-    "category": "Gotowanie",
-    "type": "text",
-    "image_url": null,
-    "question_text": "Jak nazywa się meksykańskie danie z tortillą, mięsem i salsą?",
-    "answers": ["taco", "tacos"]
-  }
+  { "id": 1, "category": "Filmy", "type": "text", "image_url": null, "question_text": "Kto zagrał Jacka w filmie Titanic?", "answers": ["leonardo dicaprio", "dicaprio"] },
+  { "id": 2, "category": "Filmy", "type": "text", "image_url": null, "question_text": "Jak nazywa się reżyser filmu Incepcja?", "answers": ["christopher nolan", "nolan"] },
+  { "id": 3, "category": "Filmy", "type": "text", "image_url": null, "question_text": "Który film zaczyna się słowami Niech Moc będzie z tobą?", "answers": ["gwiezdne wojny", "star wars"] },
+  { "id": 4, "category": "Filmy", "type": "text", "image_url": null, "question_text": "Jak nazywa się fikcyjne afrykańskie państwo z Czarnej Pantery?", "answers": ["wakanda"] },
+  { "id": 5, "category": "Filmy", "type": "text", "image_url": null, "question_text": "Który aktor wcielił się w Jokera w filmie Mroczny Rycerz?", "answers": ["heath ledger", "ledger"] },
+  { "id": 6, "category": "Filmy", "type": "text", "image_url": null, "question_text": "Jaki jest tytuł pierwszego filmu z serii o Harrym Potterze?", "answers": ["harry potter i kamien filozoficzny", "harry potter and the philosopher's stone", "harry potter and the sorcerer's stone"] },
+  { "id": 7, "category": "Filmy", "type": "text", "image_url": null, "question_text": "Kto wyreżyserował film Pulp Fiction?", "answers": ["quentin tarantino", "tarantino"] },
+  { "id": 8, "category": "Filmy", "type": "text", "image_url": null, "question_text": "Jak nazywa się niebieski lud z filmu Avatar?", "answers": ["na'vi", "navi"] },
+  { "id": 9, "category": "Filmy", "type": "text", "image_url": null, "question_text": "Który film animowany opowiada o robocie sprzątającym Ziemię?", "answers": ["wall-e", "walle"] },
+  { "id": 10, "category": "Filmy", "type": "text", "image_url": null, "question_text": "Kto zagrał główną rolę w filmie Gladiator z 2000 roku?", "answers": ["russell crowe", "crowe"] },
+
+  { "id": 11, "category": "Muzyka", "type": "text", "image_url": null, "question_text": "Który zespół stworzył utwór Smells Like Teen Spirit?", "answers": ["nirvana"] },
+  { "id": 12, "category": "Muzyka", "type": "text", "image_url": null, "question_text": "Jak nazywa się wokalista zespołu Queen?", "answers": ["freddie mercury", "mercury"] },
+  { "id": 13, "category": "Muzyka", "type": "text", "image_url": null, "question_text": "Która artystka nagrała album 21?", "answers": ["adele"] },
+  { "id": 14, "category": "Muzyka", "type": "text", "image_url": null, "question_text": "Jak nazywa się słynny festiwal muzyczny w Kalifornii zaczynający się na Coa...?", "answers": ["coachella"] },
+  { "id": 15, "category": "Muzyka", "type": "text", "image_url": null, "question_text": "Który instrument jest najbardziej kojarzony z Fryderykiem Chopinem?", "answers": ["fortepian", "piano"] },
+  { "id": 16, "category": "Muzyka", "type": "text", "image_url": null, "question_text": "Jaki zespół nagrał album Master of Puppets?", "answers": ["metallica"] },
+  { "id": 17, "category": "Muzyka", "type": "text", "image_url": null, "question_text": "Jak nazywa się gatunek muzyczny wywodzący się z Jamajki i kojarzony z Bobem Marleyem?", "answers": ["reggae"] },
+  { "id": 18, "category": "Muzyka", "type": "text", "image_url": null, "question_text": "Która piosenkarka jest autorką utworu Bad Romance?", "answers": ["lady gaga", "gaga"] },
+  { "id": 19, "category": "Muzyka", "type": "text", "image_url": null, "question_text": "Jak nazywa się irlandzki zespół, który wydał The Joshua Tree?", "answers": ["u2"] },
+  { "id": 20, "category": "Muzyka", "type": "text", "image_url": null, "question_text": "Który raper wydał album The Marshall Mathers LP?", "answers": ["eminem", "marshall mathers"] },
+
+  { "id": 21, "category": "Gry", "type": "text", "image_url": null, "question_text": "Jak nazywa się hydraulik będący maskotką Nintendo?", "answers": ["mario"] },
+  { "id": 22, "category": "Gry", "type": "text", "image_url": null, "question_text": "W jakiej grze buduje się z klocków i walczy z Creeperami?", "answers": ["minecraft"] },
+  { "id": 23, "category": "Gry", "type": "text", "image_url": null, "question_text": "Jak nazywa się region z pierwszych gier Pokemon Red i Blue?", "answers": ["kanto"] },
+  { "id": 24, "category": "Gry", "type": "text", "image_url": null, "question_text": "Które studio stworzyło serię The Witcher?", "answers": ["cd projekt red", "cd projekt", "cdpr"] },
+  { "id": 25, "category": "Gry", "type": "text", "image_url": null, "question_text": "Jak nazywa się bohaterka serii Tomb Raider?", "answers": ["lara croft", "lara"] },
+  { "id": 26, "category": "Gry", "type": "text", "image_url": null, "question_text": "Która gra battle royale od Epic Games była hitem tanecznych emotek?", "answers": ["fortnite"] },
+  { "id": 27, "category": "Gry", "type": "text", "image_url": null, "question_text": "W jakiej grze pojawia się postać Kratos?", "answers": ["god of war"] },
+  { "id": 28, "category": "Gry", "type": "text", "image_url": null, "question_text": "Jak nazywa się miasteczko z gry Stardew Valley, do którego przeprowadza się gracz?", "answers": ["pelican town"] },
+  { "id": 29, "category": "Gry", "type": "text", "image_url": null, "question_text": "Która seria gier słynie z hasła Victory Royale?", "answers": ["fortnite"] },
+  { "id": 30, "category": "Gry", "type": "text", "image_url": null, "question_text": "Jak nazywa się postać z Among Us, która sabotuje i eliminuje załogę?", "answers": ["impostor", "impostorzy", "oszust"] },
+
+  { "id": 31, "category": "Polska", "type": "text", "image_url": null, "question_text": "Jak nazywa się najdłuższa rzeka w Polsce?", "answers": ["wisla", "wisła"] },
+  { "id": 32, "category": "Polska", "type": "text", "image_url": null, "question_text": "W jakim mieście znajduje się Wawel?", "answers": ["krakow", "kraków"] },
+  { "id": 33, "category": "Polska", "type": "text", "image_url": null, "question_text": "Jak nazywa się polski taniec narodowy rozpoczynający studniówki?", "answers": ["polonez"] },
+  { "id": 34, "category": "Polska", "type": "text", "image_url": null, "question_text": "Które morze oblewa północne wybrzeże Polski?", "answers": ["morze baltyckie", "bałtyk", "baltyk"] },
+  { "id": 35, "category": "Polska", "type": "text", "image_url": null, "question_text": "Jak nazywa się pierwiastek odkryty przez Marię Skłodowską-Curie i nazwany na cześć kraju?", "answers": ["polon", "polonium"] },
+  { "id": 36, "category": "Polska", "type": "text", "image_url": null, "question_text": "Jakie miasto jest stolicą województwa pomorskiego?", "answers": ["gdansk", "gdańsk"] },
+  { "id": 37, "category": "Polska", "type": "text", "image_url": null, "question_text": "Jak nazywa się tradycyjna polska zupa na zakwasie z kiełbasą i jajkiem?", "answers": ["zurek", "żurek"] },
+  { "id": 38, "category": "Polska", "type": "text", "image_url": null, "question_text": "W jakim mieście odbywa się słynny jarmark św. Dominika?", "answers": ["gdansk", "gdańsk"] },
+  { "id": 39, "category": "Polska", "type": "text", "image_url": null, "question_text": "Jak nazywa się pasmo górskie obejmujące Zakopane?", "answers": ["tatry"] },
+  { "id": 40, "category": "Polska", "type": "text", "image_url": null, "question_text": "Który polski kompozytor napisał operę Straszny dwór?", "answers": ["stanislaw moniuszko", "stani­sław moniuszko", "moniuszko"] },
+
+  { "id": 41, "category": "Nauka", "type": "text", "image_url": null, "question_text": "Jak nazywa się planeta znana z charakterystycznych pierścieni?", "answers": ["saturn"] },
+  { "id": 42, "category": "Nauka", "type": "text", "image_url": null, "question_text": "Jaki gaz jest najobficiej reprezentowany w atmosferze Ziemi?", "answers": ["azot"] },
+  { "id": 43, "category": "Nauka", "type": "text", "image_url": null, "question_text": "Jak nazywa się proces, w którym rośliny produkują glukozę przy udziale światła?", "answers": ["fotosynteza"] },
+  { "id": 44, "category": "Nauka", "type": "text", "image_url": null, "question_text": "Jaka jest jednostka natężenia prądu elektrycznego?", "answers": ["amper", "a"] },
+  { "id": 45, "category": "Nauka", "type": "text", "image_url": null, "question_text": "Jak nazywa się największy narząd ludzkiego ciała?", "answers": ["skora", "skóra"] },
+  { "id": 46, "category": "Nauka", "type": "text", "image_url": null, "question_text": "Która cząstka elementarna ma ładunek ujemny?", "answers": ["elektron"] },
+  { "id": 47, "category": "Nauka", "type": "text", "image_url": null, "question_text": "Jak nazywa się nauka o trzęsieniach ziemi?", "answers": ["sejsmologia"] },
+  { "id": 48, "category": "Nauka", "type": "text", "image_url": null, "question_text": "Jakie pH ma roztwór obojętny?", "answers": ["7", "siedem"] },
+  { "id": 49, "category": "Nauka", "type": "text", "image_url": null, "question_text": "Jak nazywa się gwiazda znajdująca się w centrum Układu Słonecznego?", "answers": ["slonce", "słońce"] },
+  { "id": 50, "category": "Nauka", "type": "text", "image_url": null, "question_text": "Która witamina jest syntetyzowana w skórze pod wpływem promieniowania UV?", "answers": ["witamina d", "d"] },
+
+  { "id": 51, "category": "Sport", "type": "text", "image_url": null, "question_text": "Jak nazywa się turniej tenisowy rozgrywany na trawie w Londynie?", "answers": ["wimbledon"] },
+  { "id": 52, "category": "Sport", "type": "text", "image_url": null, "question_text": "Który piłkarz jest nazywany CR7?", "answers": ["cristiano ronaldo", "ronaldo"] },
+  { "id": 53, "category": "Sport", "type": "text", "image_url": null, "question_text": "Jak nazywa się najważniejsza klubowa liga piłkarska w Europie?", "answers": ["liga mistrzow", "liga mistrzów", "uefa champions league", "champions league"] },
+  { "id": 54, "category": "Sport", "type": "text", "image_url": null, "question_text": "W jakiej dyscyplinie sportowej rywalizuje Iga Świątek?", "answers": ["tenis"] },
+  { "id": 55, "category": "Sport", "type": "text", "image_url": null, "question_text": "Jak nazywa się sport, w którym wykonuje się wsady do kosza?", "answers": ["koszykowka", "koszykówka", "basketball"] },
+  { "id": 56, "category": "Sport", "type": "text", "image_url": null, "question_text": "Który kraj kojarzony jest z drużyną All Blacks?", "answers": ["nowa zelandia", "new zealand"] },
+  { "id": 57, "category": "Sport", "type": "text", "image_url": null, "question_text": "Jak nazywa się wyścig kolarski dookoła Francji?", "answers": ["tour de france"] },
+  { "id": 58, "category": "Sport", "type": "text", "image_url": null, "question_text": "W jakim sporcie używa się terminu birdie?", "answers": ["golf"] },
+  { "id": 59, "category": "Sport", "type": "text", "image_url": null, "question_text": "Który polski skoczek narciarski zdobył cztery Kryształowe Kule PŚ?", "answers": ["adam malysz", "adam małysz", "malysz", "małysz"] },
+  { "id": 60, "category": "Sport", "type": "text", "image_url": null, "question_text": "Jak nazywa się pozycja zawodnika broniącego bramki w piłce nożnej?", "answers": ["bramkarz", "golkiper", "goalkeeper"] },
+
+  { "id": 61, "category": "Seriale", "type": "text", "image_url": null, "question_text": "Jak nazywa się kontynent, na którym toczy się większość akcji Gry o tron?", "answers": ["westeros"] },
+  { "id": 62, "category": "Seriale", "type": "text", "image_url": null, "question_text": "Jakie imię nosi główna bohaterka serialu Wednesday?", "answers": ["wednesday", "wednesday addams"] },
+  { "id": 63, "category": "Seriale", "type": "text", "image_url": null, "question_text": "Jaki serial opowiada o napadzie na mennicę z postacią Profesora?", "answers": ["dom z papieru", "la casa de papel", "money heist"] },
+  { "id": 64, "category": "Seriale", "type": "text", "image_url": null, "question_text": "Jak nazywa się kawiarnia, w której spotykali się bohaterowie Friends?", "answers": ["central perk"] },
+  { "id": 65, "category": "Seriale", "type": "text", "image_url": null, "question_text": "Który serial science fiction przedstawia USS Enterprise?", "answers": ["star trek"] },
+  { "id": 66, "category": "Seriale", "type": "text", "image_url": null, "question_text": "Jak nazywa się serial o brytyjskiej rodzinie królewskiej z rolą Elżbiety II?", "answers": ["the crown"] },
+  { "id": 67, "category": "Seriale", "type": "text", "image_url": null, "question_text": "Który serial opowiada o klinice Sacred Heart i doktorze J.D.?", "answers": ["scrubs"] },
+  { "id": 68, "category": "Seriale", "type": "text", "image_url": null, "question_text": "Jak nazywa się serial o rodzinie Shelby z Birmingham?", "answers": ["peaky blinders"] },
+  { "id": 69, "category": "Seriale", "type": "text", "image_url": null, "question_text": "Który serial antologiczny pokazuje mroczne skutki technologii i mediów?", "answers": ["black mirror"] },
+  { "id": 70, "category": "Seriale", "type": "text", "image_url": null, "question_text": "Jak nazywa się serial fantasy oparty na sadze Andrzeja Sapkowskiego?", "answers": ["wiedzmin", "wiedźmin", "the witcher"] },
+
+  { "id": 71, "category": "Gotowanie", "type": "text", "image_url": null, "question_text": "Jak nazywa się włoski deser z mascarpone i kawą?", "answers": ["tiramisu"] },
+  { "id": 72, "category": "Gotowanie", "type": "text", "image_url": null, "question_text": "Jakiego sera używa się najczęściej do klasycznej sałatki greckiej?", "answers": ["feta"] },
+  { "id": 73, "category": "Gotowanie", "type": "text", "image_url": null, "question_text": "Jak nazywa się francuska zupa cebulowa zapiekana z grzanką i serem?", "answers": ["zupa cebulowa", "french onion soup"] },
+  { "id": 74, "category": "Gotowanie", "type": "text", "image_url": null, "question_text": "Jak nazywa się technika gotowania makaronu na półtwardo?", "answers": ["al dente"] },
+  { "id": 75, "category": "Gotowanie", "type": "text", "image_url": null, "question_text": "Jaki sos jest podstawą pizzy neapolitańskiej?", "answers": ["sos pomidorowy", "pomidorowy"] },
+  { "id": 76, "category": "Gotowanie", "type": "text", "image_url": null, "question_text": "Jak nazywa się japońska zupa na bulionie z makaronem?", "answers": ["ramen"] },
+  { "id": 77, "category": "Gotowanie", "type": "text", "image_url": null, "question_text": "Jakie warzywo dominuje w tradycyjnym polskim leczo?", "answers": ["papryka"] },
+  { "id": 78, "category": "Gotowanie", "type": "text", "image_url": null, "question_text": "Jak nazywa się turecki pionowy rożen z mięsem podawanym w picie?", "answers": ["kebab", "doner", "döner"] },
+  { "id": 79, "category": "Gotowanie", "type": "text", "image_url": null, "question_text": "Jaki składnik odpowiada za wyrastanie ciasta drożdżowego?", "answers": ["drozdze", "drożdże", "yeast"] },
+  { "id": 80, "category": "Gotowanie", "type": "text", "image_url": null, "question_text": "Jak nazywa się hiszpańskie danie z ryżu, szafranu i owoców morza?", "answers": ["paella"] },
+
+  { "id": 81, "category": "Geografia", "type": "text", "image_url": null, "question_text": "Jak nazywa się najdłuższa rzeka świata według większości podręczników?", "answers": ["nil"] },
+  { "id": 82, "category": "Geografia", "type": "text", "image_url": null, "question_text": "Jaka jest stolica Kanady?", "answers": ["ottawa"] },
+  { "id": 83, "category": "Geografia", "type": "text", "image_url": null, "question_text": "Która pustynia jest największą gorącą pustynią świata?", "answers": ["sahara"] },
+  { "id": 84, "category": "Geografia", "type": "text", "image_url": null, "question_text": "Jak nazywa się najwyższa góra świata?", "answers": ["mount everest", "everest"] },
+  { "id": 85, "category": "Geografia", "type": "text", "image_url": null, "question_text": "Jaki ocean leży między Afryką a Australią?", "answers": ["ocean indyjski", "indyjski", "indian ocean"] },
+  { "id": 86, "category": "Geografia", "type": "text", "image_url": null, "question_text": "Które państwo ma kształt buta na mapie Europy?", "answers": ["wlochy", "włochy", "italy"] },
+  { "id": 87, "category": "Geografia", "type": "text", "image_url": null, "question_text": "Jak nazywa się cieśnina oddzielająca Europę od Afryki przy Hiszpanii?", "answers": ["gibraltar", "ciesnina gibraltarska", "cieśnina gibraltarska"] },
+  { "id": 88, "category": "Geografia", "type": "text", "image_url": null, "question_text": "Jaka jest stolica Japonii?", "answers": ["tokio", "tokyo"] },
+  { "id": 89, "category": "Geografia", "type": "text", "image_url": null, "question_text": "Który kontynent jest najmniejszy pod względem powierzchni?", "answers": ["australia"] },
+  { "id": 90, "category": "Geografia", "type": "text", "image_url": null, "question_text": "Jak nazywa się największa wyspa świata (nie licząc kontynentów)?", "answers": ["grenlandia", "greenland"] },
+
+  { "id": 91, "category": "Historia", "type": "text", "image_url": null, "question_text": "Jak nazywał się pierwszy cesarz rzymski?", "answers": ["august", "oktawian august", "oktawian"] },
+  { "id": 92, "category": "Historia", "type": "text", "image_url": null, "question_text": "W jakim mieście znajdował się mur zburzony symbolicznie pod koniec zimnej wojny?", "answers": ["berlin"] },
+  { "id": 93, "category": "Historia", "type": "text", "image_url": null, "question_text": "Jak nazywał się statek, na którym przypłynęli pielgrzymi do Ameryki w 1620 roku?", "answers": ["mayflower"] },
+  { "id": 94, "category": "Historia", "type": "text", "image_url": null, "question_text": "Która królowa Francji była żoną Ludwika XVI i zginęła na gilotynie?", "answers": ["maria antonina", "marie antoinette"] },
+  { "id": 95, "category": "Historia", "type": "text", "image_url": null, "question_text": "Jak nazywał się konflikt między Atenami i Spartą w V wieku p.n.e.?", "answers": ["wojna peloponeska"] },
+  { "id": 96, "category": "Historia", "type": "text", "image_url": null, "question_text": "Który przywódca Mongolii stworzył wielkie imperium w XIII wieku?", "answers": ["czyngis chan", "genghis khan"] },
+  { "id": 97, "category": "Historia", "type": "text", "image_url": null, "question_text": "Jak nazywała się epoka odkryć geograficznych zapoczątkowana przez Portugalię i Hiszpanię?", "answers": ["wielkie odkrycia geograficzne"] },
+  { "id": 98, "category": "Historia", "type": "text", "image_url": null, "question_text": "Jak nazywał się dokument ograniczający władzę króla Jana bez Ziemi w Anglii?", "answers": ["magna carta", "wielka karta swobod"] },
+  { "id": 99, "category": "Historia", "type": "text", "image_url": null, "question_text": "Które miasto było stolicą Cesarstwa Bizantyjskiego?", "answers": ["konstantynopol", "constantinople", "stambul", "istanbul"] },
+  { "id": 100, "category": "Historia", "type": "text", "image_url": null, "question_text": "Jak nazywał się szlak handlowy łączący Chiny z Europą?", "answers": ["jedwabny szlak", "silk road"] },
+
+  { "id": 101, "category": "Flagi", "type": "image", "image_url": "/img/flags/france.svg", "question_text": "Jaki kraj przedstawia ta flaga?", "answers": ["francja", "france"] },
+  { "id": 102, "category": "Flagi", "type": "image", "image_url": "/img/flags/italy.svg", "question_text": "Jaki kraj przedstawia ta flaga?", "answers": ["wlochy", "włochy", "italy", "italia"] },
+  { "id": 103, "category": "Flagi", "type": "image", "image_url": "/img/flags/japan.svg", "question_text": "Jaki kraj przedstawia ta flaga?", "answers": ["japonia", "japan"] },
+  { "id": 104, "category": "Flagi", "type": "image", "image_url": "/img/flags/poland.svg", "question_text": "Jaki kraj przedstawia ta flaga?", "answers": ["polska", "poland"] },
+  { "id": 105, "category": "Flagi", "type": "image", "image_url": "/img/flags/germany.svg", "question_text": "Jaki kraj przedstawia ta flaga?", "answers": ["niemcy", "germany"] },
+  { "id": 106, "category": "Flagi", "type": "image", "image_url": "/img/flags/ukraine.svg", "question_text": "Jaki kraj przedstawia ta flaga?", "answers": ["ukraina", "ukraine"] },
+  { "id": 107, "category": "Flagi", "type": "image", "image_url": "/img/flags/sweden.svg", "question_text": "Jaki kraj przedstawia ta flaga?", "answers": ["szwecja", "sweden"] },
+  { "id": 108, "category": "Flagi", "type": "image", "image_url": "/img/flags/czechia.svg", "question_text": "Jaki kraj przedstawia ta flaga?", "answers": ["czechy", "czech republic", "czechia"] },
+  { "id": 109, "category": "Flagi", "type": "image", "image_url": "/img/flags/nigeria.svg", "question_text": "Jaki kraj przedstawia ta flaga?", "answers": ["nigeria"] },
+  { "id": 110, "category": "Flagi", "type": "image", "image_url": "/img/flags/argentina.svg", "question_text": "Jaki kraj przedstawia ta flaga?", "answers": ["argentyna", "argentina"] },
+
+  { "id": 111, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Dokończ: Billie Jean is not my...", "answers": ["lover"] },
+  { "id": 112, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Dokończ: Hello from the other...", "answers": ["side"] },
+  { "id": 113, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Dokończ: We will, we will...", "answers": ["rock you"] },
+  { "id": 114, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Dokończ: Never gonna give you...", "answers": ["up"] },
+  { "id": 115, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Dokończ: Hit me baby one more...", "answers": ["time"] },
+  { "id": 116, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Dokończ: Is this the real life? Is this just...", "answers": ["fantasy"] },
+  { "id": 117, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Dokończ: I came in like a...", "answers": ["wrecking ball"] },
+  { "id": 118, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Dokończ: Wake me up before you go-...", "answers": ["go"] },
+  { "id": 119, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Dokończ: Country roads, take me...", "answers": ["home"] },
+  { "id": 120, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Dokończ: Sweet dreams are made of...", "answers": ["this"] },
+  { "id": 121, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Kto wykonuje piosenkę Billie Jean?", "answers": ["michael jackson", "jackson"] },
+  { "id": 122, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Kto wykonuje piosenkę Hello (2015)?", "answers": ["adele"] },
+  { "id": 123, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Kto wykonuje piosenkę Rolling in the Deep?", "answers": ["adele"] },
+  { "id": 124, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Kto wykonuje piosenkę Blinding Lights?", "answers": ["the weeknd", "weeknd"] },
+  { "id": 125, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Kto wykonuje piosenkę Shape of You?", "answers": ["ed sheeran", "sheeran"] },
+  { "id": 126, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Kto wykonuje piosenkę Poker Face?", "answers": ["lady gaga", "gaga"] },
+  { "id": 127, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Kto wykonuje piosenkę Smells Like Teen Spirit?", "answers": ["nirvana"] },
+  { "id": 128, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Kto wykonuje piosenkę Bohemian Rhapsody?", "answers": ["queen"] },
+  { "id": 129, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Kto wykonuje piosenkę Bad Guy?", "answers": ["billie eilish", "eilish"] },
+  { "id": 130, "category": "Teksty piosenek", "type": "text", "image_url": null, "question_text": "Kto wykonuje piosenkę Viva La Vida?", "answers": ["coldplay"] }
 ]
